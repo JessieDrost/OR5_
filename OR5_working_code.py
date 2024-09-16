@@ -21,7 +21,6 @@ d_o = dict(zip(orders_df['order'], orders_df['deadline'])) # Deadline van iedere
 c_o = dict(zip(orders_df['order'], orders_df['penalty'])) # Boete voor iedere bestelling
 v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van iedere machine
 
-print("Running the correct script!")
  # CONSTRUCTIEVE HEURISTIEK
 """
     Pseudocode:
@@ -48,5 +47,4 @@ print("Running the correct script!")
     Step 4: Increment. Increment t <- t+1, and return to Step 1.
 """
 print(orders_df.head())
-print("Running the correct script!")
 # META-HEURISTIEK
