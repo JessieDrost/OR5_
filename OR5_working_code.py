@@ -10,7 +10,7 @@ machines_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Machine
 setups_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Setups')
 
 # Sets definiëren
-O = orders_df['order'].tolist() # Bestellingen
+O = orders_df['order'].tolist() # Bestellingengit
 M = machines_df['machine'].tolist() # Machines
 H = setups_df['from_colour'].unique().tolist() # Kleuren (unieke waardes om dubbele te voorkomen want daar kan je niks mee)
 
@@ -21,6 +21,7 @@ d_o = dict(zip(orders_df['order'], orders_df['deadline'])) # Deadline van iedere
 c_o = dict(zip(orders_df['order'], orders_df['penalty'])) # Boete voor iedere bestelling
 v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van iedere machine
 
+print("Running the correct script!")
  # CONSTRUCTIEVE HEURISTIEK
 """
     Pseudocode:
@@ -47,4 +48,5 @@ v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van ied
     Step 4: Increment. Increment t <- t+1, and return to Step 1.
 """
 print(orders_df.head())
+print("Running the correct script!")
 # META-HEURISTIEK
