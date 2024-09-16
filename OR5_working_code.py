@@ -19,6 +19,23 @@ d_o = dict(zip(orders_df['order'], orders_df['deadline'])) # Deadline van iedere
 c_o = dict(zip(orders_df['order'], orders_df['penalty'])) # Boete voor iedere bestelling
 v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van iedere machine
     
+# Setup-tijden instellen op basis van kleuren
+t_setup = {}
+for _, row in setups_df.iterrows():
+    t_setup[(row['from_colour'], row['to_colour'])] = row['setup_time']
+
+# Afgeleide parameters
+def calc_processing_time(order, machine):
+    surface = s_o[order]
+    speed = v_m[machine]
+    return surface / speed
+
+# Setup-tijden tussen orders
+def calc_setup_time(order1, order2):
+    color1 = k_o[order1]
+    color2 = k_o[order2]
+    return t_setup[(color1, color2)]
+
  # CONSTRUCTIEVE HEURISTIEK
 """
     Pseudocode:
@@ -44,5 +61,5 @@ v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van ied
     Step 3: Update. x^(t+1) <- x^(t) + delta_x^(t+1)
     Step 4: Increment. Increment t <- t+1, and return to Step 1.
 """
-    
+print(H)
 # META-HEURISTIEK
