@@ -1,6 +1,8 @@
 # WISKUNDIG MODEL
 import pandas as pd
 import numpy as np
+import os
+print(os.getcwd())
 
 # Gegevens importeren vanuit excel
 orders_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Orders')
@@ -18,7 +20,7 @@ k_o = dict(zip(orders_df['order'], orders_df['colour'])) # Kleur van iedere best
 d_o = dict(zip(orders_df['order'], orders_df['deadline'])) # Deadline van iedere bestelling
 c_o = dict(zip(orders_df['order'], orders_df['penalty'])) # Boete voor iedere bestelling
 v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van iedere machine
-    
+
  # CONSTRUCTIEVE HEURISTIEK
 """
     Pseudocode:
@@ -44,5 +46,5 @@ v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van ied
     Step 3: Update. x^(t+1) <- x^(t) + delta_x^(t+1)
     Step 4: Increment. Increment t <- t+1, and return to Step 1.
 """
-    
+print(orders_df.head())
 # META-HEURISTIEK
