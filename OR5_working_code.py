@@ -1,6 +1,8 @@
 # WISKUNDIG MODEL
 import pandas as pd
 import numpy as np
+import os
+print(os.getcwd())
 
 # Gegevens importeren vanuit excel
 orders_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Orders')
