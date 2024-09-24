@@ -1,8 +1,16 @@
 # WISKUNDIG MODEL
+
 import pandas as pd
 import numpy as np
-import os
-print(os.getcwd())
+import matplotlib.pyplot as plt    
+import time 
+#Current time per machine is 0
+#Scheduled orders empty list
+#Available orders is orders
+#Current colour per machine
+#Def setup time(prev colour, current colour)
+#Def nearest neighbour 
+#For index if constraints
 
 # Gegevens importeren vanuit excel
 orders_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Orders')
@@ -10,18 +18,24 @@ machines_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Machine
 setups_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Setups')
 
 # Sets definiëren
-O = orders_df['order'].tolist() # Bestellingengit
+B = orders_df['order'].tolist() # Bestellingen
 M = machines_df['machine'].tolist() # Machines
-H = setups_df['from_colour'].unique().tolist() # Kleuren (unieke waardes om dubbele te voorkomen want daar kan je niks mee)
+H1 = setups_df['from_colour'].tolist() # Start kleuren
+H2 = setups_df['to_colour'].tolist() # Eind kleuren 
 
-#Parameters definiëren
-s_o = dict(zip(orders_df['order'], orders_df['surface'])) # Oppervlakte per bestelling
-k_o = dict(zip(orders_df['order'], orders_df['colour'])) # Kleur van iedere bestelling
-d_o = dict(zip(orders_df['order'], orders_df['deadline'])) # Deadline van iedere bestelling
-c_o = dict(zip(orders_df['order'], orders_df['penalty'])) # Boete voor iedere bestelling
-v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van iedere machine
+current_time_M1 = 0
+current_time_M2 = 0
+current_time_M3 = 0
+current_color_M1 = None
+current_color_M2 = None
+current_color_M3 = None 
+scheduled_orders = []
+available_orders = B
 
- # CONSTRUCTIEVE HEURISTIEK
+#handige cijfertjes definiëren
+VERYBIGNUMBER = 424242424242
+
+# CONSTRUCTIEVE HEURISTIEK
 """
     Pseudocode:
     Step 0: Initialization. Start with all-free initual partial solution
@@ -35,8 +49,14 @@ v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van ied
     Step 3: Increment. Increment t <- t+1, and return to Step 1.
 """
 
+def setup_time(previous_color, current_color):
+    
+    
+def nearest_neighbor():
+    
+    
 # DISCRETE IMPROVING SEARCH
-"""
+ """
     Pseudocode: 
     Step 0: Initialization. Choose any starting feasible solution x^(0), and set
     solution index t <- 0.
@@ -46,5 +66,5 @@ v_m = dict(zip(machines_df['machine'], machines_df['speed'])) # Snelheid van ied
     Step 3: Update. x^(t+1) <- x^(t) + delta_x^(t+1)
     Step 4: Increment. Increment t <- t+1, and return to Step 1.
 """
-print(orders_df.head())
+
 # META-HEURISTIEK
