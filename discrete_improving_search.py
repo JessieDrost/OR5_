@@ -8,12 +8,9 @@
 bereken de start en eindtijd van iedere order en de set-up tijd tussen alle opeenvolgende orders, plot deze met matplotlib op een gantt schema 
 print totale penalty
     """
-
-
 import pandas as pd
 import numpy as np
 import copy
-import logging
 import time
 import matplotlib.pyplot as plt
 from constructive_heuristics import greedy_paint_planner, plot_schedule
