@@ -17,14 +17,6 @@ import matplotlib.pyplot as plt
 
 VERYBIGNUMBER = 424242424242
 
-# Colors for visualization
-color_map = {
-    'Green': 'green',
-    'Yellow': 'yellow',
-    'Blue': 'blue',
-    'Red': 'red'
-}
-
 # Gegevens importeren vanuit excel
 orders_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Orders')
 machines_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Machines')
@@ -132,10 +124,24 @@ def greedy_paint_planner():
 
     return total_penalty, scheduled_orders
 
-def plot_schedule(scheduled_orders):
+def plot_schedule(scheduled_orders, method):
+    """Plots a Gantt chart of the scheuled orders
+
+    Args:
+        scheduled_orders (dict): every order, their starting time, end time, on which machine and set-up time
+        method (str): method used to calculate schedule
+    """    
     fig, ax = plt.subplots(figsize=(10, 6))
     
     y_pos = 0
+    
+    # Colors for visualization
+    color_map = {
+         'Green': 'green',
+       'Yellow': 'yellow',
+       'Blue': 'blue',
+      'Red': 'red'
+    }
     for machine, orders in scheduled_orders.items():
         y_pos += 1  # Voor elke machine
         for order in orders:
@@ -156,11 +162,11 @@ def plot_schedule(scheduled_orders):
     ax.set_yticklabels([f"Machine {m}" for m in scheduled_orders.keys()])
     ax.set_xlabel('Time')
     ax.set_ylabel('Machines')
-    ax.set_title('Gantt Chart for Paint Shop Scheduling')
+    ax.set_title(f'Gantt Chart for Paint Shop Scheduling using {method}')
     plt.show()
 
 # Uitvoeren van het algoritme
 if __name__ == "__main__":
     total_penalty, scheduled_orders = greedy_paint_planner()
     print(f"Total Penalty: {total_penalty}")
-    plot_schedule(scheduled_orders)
+    plot_schedule(scheduled_orders, 'greedy heuristics')
