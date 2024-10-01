@@ -31,8 +31,15 @@ def setup_time(from_colour, to_colour, setups_df):
     """
     Calculate setup time based on the color transition.
     """
-    if from_colour == to_colour or from_colour is None:  # Geen wisseling of initiale setup
+    if from_colour == to_colour or from_colour is None:
         return 0
     else:
         return setups_df[(setups_df['from_colour'] == from_colour) & (setups_df['to_colour'] == to_colour)]['setup_time'].values[0]
+
+def calculate_total_penalty(current_time, deadline, penalty):
+    """
+    Calculate total penalty based on the delay from the deadline.
+    """
+    delay = max(0, current_time - deadline)
+    return delay * penalty
 
