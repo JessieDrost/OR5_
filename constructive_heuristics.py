@@ -1,48 +1,63 @@
-"""Solving scheduling Problem
-    using greedy constructive heuristic
-    
-    Stap 0: alle machines zijn vrij 
-    Stap 1: stop als alle orders aan een machine zijn toegewezen 
-    Stap 2: begin bij de snelste machine en kies van de orders met de laagste set-up tijd degene met de hoogste penalty en wijs deze toe aan de machine. Als het toewijzen van deze order zou resulteren in een penalty, wordt deze order toegewezen aan de volgende snelste machine. Als een toewijzing bij iedere machine resulteert in een penalty, wordt de order toegewezen aan de snelste machine.
-    Stap 3: herhaal stap 1 en 2 
-bereken de start en eindtijd van iedere order en de set-up tijd tussen alle opeenvolgende orders, plot deze met matplotlib op een gantt schema 
-print totale penalty
+"""Solving the scheduling problem
+    using a greedy constructive heuristic.
 
+    Step 0: all machines are free 
+    Step 1: stop if all orders have been assigned to a machine 
+    Step 2: start with the fastest machine and choose from the orders with the lowest setup time the one with the highest penalty, and assign it to the machine. If assigning this order would result in a penalty, this order is assigned to the next fastest machine. If an assignment results in a penalty for every machine, the order is assigned to the fastest machine.
+    Step 3: repeat steps 1 and 2 
+    Calculate the start and end time of each order and the setup time between all consecutive orders, plot this with matplotlib on a Gantt chart 
+    print total penalty
 """
+
 import pandas as pd
 import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-VERYBIGNUMBER = 424242424242
+VERY_BIG_NUMBER = 424242424242
 
-# Gegevens importeren vanuit excel
+# Import data from Excel
 orders_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Orders')
 machines_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Machines')
 setups_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Setups')
 
-# Sets definiëren
-B = orders_df['order'].tolist()  # Bestellingen
+# Define sets
+B = orders_df['order'].tolist()  # Orders
 M = machines_df['machine'].tolist()  # Machines
-H1 = setups_df['from_colour'].tolist()  # Startkleuren
-H2 = setups_df['to_colour'].tolist()  # Eindkleuren
+H1 = setups_df['from_colour'].tolist()  # Start colours
+H2 = setups_df['to_colour'].tolist()  # End colours
 
-# Startwaarden voor elke machine
-current_time = {machine: 0 for machine in M}  # Tijd per machine
-current_color = {machine: None for machine in M}  # Kleur per machine
+# Initial values for each machine
+current_time = {machine: 0 for machine in M}  # Time per machine
+current_color = {machine: None for machine in M}  # Colour per machine
 scheduled_orders = {machine: [] for machine in M}  # Orders per machine
-available_orders = B.copy()  # Beschikbare orders
+available_orders = B.copy()  # Available orders
 
-# Hulpfuncties voor berekeningen
+# Helper functions for calculations
 def processing_time(surface, speed):
     """
     Calculate the processing time based on surface area and machine speed.
+
+    Args:
+        surface (float): The surface area of the order.
+        speed (float): The speed of the machine.
+
+    Returns:
+        float: The processing time required for the order.
     """
     return surface / speed
 
 def setup_time(from_colour, to_colour, setups_df):
     """
-    Calculate setup time based on the color transition.
+    Calculate setup time based on the colour transition.
+
+    Args:
+        from_colour (str): The colour to transition from.
+        to_colour (str): The colour to transition to.
+        setups_df (pd.DataFrame): DataFrame containing setup times.
+
+    Returns:
+        float: The setup time required for the colour transition.
     """
     if from_colour == to_colour or from_colour is None:
         return 0
@@ -52,31 +67,41 @@ def setup_time(from_colour, to_colour, setups_df):
 def calculate_total_penalty(current_time, deadline, penalty):
     """
     Calculate total penalty based on the delay from the deadline.
+
+    Args:
+        current_time (float): The current completion time of the order.
+        deadline (float): The deadline for the order.
+        penalty (float): The penalty rate for missing the deadline.
+
+    Returns:
+        float: The total penalty incurred due to delay.
     """
     delay = max(0, current_time - deadline)
     return delay * penalty
 
-# Greedy toewijzingsfunctie
 def greedy_paint_planner():
     """
     Greedy algorithm to assign orders to machines based on speed, setup time, and penalty.
+
+    Returns:
+        tuple: Total penalty and a dictionary of scheduled orders for each machine.
     """
     total_penalty = 0
     
-    # Sorteer machines op snelheid (snelste eerst)
+    # Sort machines by speed (fastest first)
     sorted_machines = machines_df.sort_values(by='speed', ascending=False)['machine'].tolist()
     
-    # Loop totdat alle orders zijn toegewezen
+    # Loop until all orders are assigned
     while available_orders:
         for machine in sorted_machines:
             if not available_orders:
-                break  # Stop als alle orders zijn toegewezen
+                break  # Stop if all orders are assigned
             
             best_order = None
-            min_setup_time = VERYBIGNUMBER
-            max_penalty = -VERYBIGNUMBER
+            min_setup_time = VERY_BIG_NUMBER
+            max_penalty = -VERY_BIG_NUMBER
             
-            # Zoek naar de beste order voor de huidige machine
+            # Find the best order for the current machine
             for order in available_orders:
                 order_info = orders_df[orders_df['order'] == order].iloc[0]
                 surface = order_info['surface']
@@ -84,21 +109,21 @@ def greedy_paint_planner():
                 deadline = order_info['deadline']
                 penalty = order_info['penalty']
                 
-                # Bereken verwerkingstijd en omsteltijd
+                # Calculate processing time and setup time
                 process_time = processing_time(surface, machines_df[machines_df['machine'] == machine]['speed'].values[0])
                 set_time = setup_time(current_color[machine], colour, setups_df)
                 completion_time = current_time[machine] + process_time + set_time
                 
-                # Controleer of er een penalty is
+                # Check if there is a penalty
                 current_penalty = calculate_total_penalty(completion_time, deadline, penalty)
                 
-                # Selecteer de order met de laagste set-up tijd en hoogste penalty
+                # Select the order with the lowest setup time and highest penalty
                 if set_time < min_setup_time or (set_time == min_setup_time and current_penalty > max_penalty):
                     best_order = order
                     min_setup_time = set_time
                     max_penalty = current_penalty
             
-            # Als er een beste order gevonden is, wijs deze toe aan de machine
+            # If a best order is found, assign it to the machine
             if best_order is not None:
                 order_info = orders_df[orders_df['order'] == best_order].iloc[0]
                 process_time = processing_time(order_info['surface'], machines_df[machines_df['machine'] == machine]['speed'].values[0])
@@ -117,9 +142,9 @@ def greedy_paint_planner():
                 current_time[machine] = end_time
                 current_color[machine] = order_info['colour']
                 
-                # Verwijder de toegewezen order uit de lijst van beschikbare orders
+                # Remove the assigned order from the list of available orders
                 available_orders.remove(best_order)
-                total_penalty += max_penalty  # Boete optellen
+                total_penalty += max_penalty  # Add penalty
 
     return total_penalty, scheduled_orders
 
@@ -127,7 +152,7 @@ def plot_schedule(scheduled_orders, method, orders_df):
     """Plots a Gantt chart of the scheduled orders and marks late orders.
 
     Args:
-        scheduled_orders (dict): Every order, their start time, end time, on which machine, and set-up time.
+        scheduled_orders (dict): Every order, their start time, end time, on which machine, and setup time.
         method (str): Method used to calculate the schedule.
         orders_df (pd.DataFrame): DataFrame with order details like deadlines and penalties.
     """
@@ -135,7 +160,7 @@ def plot_schedule(scheduled_orders, method, orders_df):
     
     y_pos = 0
     
-    # Colors for visualization
+    # Colours for visualisation
     color_map = {
         'Green': 'green',
         'Yellow': 'yellow',
@@ -163,7 +188,7 @@ def plot_schedule(scheduled_orders, method, orders_df):
             
             # Add order number, mark it with '*' if late
             label = f"Order {order['order']}" + (' * ' if is_late else '')
-            ax.text(start_time + setup_time + processing_time / 2, y_pos, label, ha='center', va='center', color='black', rotation=90, weight = 'bold')
+            ax.text(start_time + setup_time + processing_time / 2, y_pos, label, ha='center', va='center', color='black', rotation=90, weight='bold')
 
             # Draw setup time
             if setup_time > 0:
@@ -176,8 +201,7 @@ def plot_schedule(scheduled_orders, method, orders_df):
     ax.set_title(f'Gantt Chart for Paint Shop Scheduling using {method}')
     plt.show()
 
-
-# Uitvoeren van het algoritme
+# Execute the algorithm
 if __name__ == "__main__":
     total_penalty, scheduled_orders = greedy_paint_planner()
     print(f"Total Penalty: {total_penalty}")
