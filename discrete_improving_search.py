@@ -67,7 +67,7 @@ def calculate_penalty_for_schedule(scheduled_orders):
             total_penalty += calculate_total_penalty(completion_time, deadline, penalty)
     return total_penalty
 
-def swap_orders(order1, machine1, order2, machine2, scheduled_orders):
+def exchange_orders(order1, machine1, order2, machine2, scheduled_orders):
     """Hulpfunctie om twee orders tussen machines te wisselen."""
     # Wissel de orders in de planning
     idx1 = next(i for i, o in enumerate(scheduled_orders[machine1]) if o['order'] == order1)
@@ -124,7 +124,7 @@ def discrete_improving_search():
                         temp_scheduled_orders = copy.deepcopy(scheduled_orders)
                         
                         # Wissel de orders
-                        swap_orders(order1['order'], machine1, order2['order'], machine2, temp_scheduled_orders)
+                        exchange_orders(order1['order'], machine1, order2['order'], machine2, temp_scheduled_orders)
                         
                         # Werk het schema bij na de wisseling
                         temp_time = copy.deepcopy(current_time)
@@ -158,4 +158,4 @@ def discrete_improving_search():
 # Uitvoeren van het algoritme
 if __name__ == "__main__":
     total_penalty, optimized_scheduled_orders = discrete_improving_search()
-    plot_schedule(optimized_scheduled_orders, '2-opt swap')
+    plot_schedule(optimized_scheduled_orders, '2-exchange')
