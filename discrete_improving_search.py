@@ -158,4 +158,4 @@ def discrete_improving_search():
 # Uitvoeren van het algoritme
 if __name__ == "__main__":
     total_penalty, optimized_scheduled_orders = discrete_improving_search()
-    plot_schedule(optimized_scheduled_orders, '2-exchange')
+    plot_schedule(optimized_scheduled_orders, '2-exchange', orders_df)
