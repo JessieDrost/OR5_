@@ -88,59 +88,7 @@ def calculate_penalty_for_schedule(scheduled_orders):
             total_penalty += calculate_total_penalty(completion_time, deadline, penalty)
     return total_penalty
 
-def exchange_orders(order1, machine1, order2, machine2, scheduled_orders):
-    """
-    Helper function to exchange two orders between machines.
-
-    Args:
-        order1 (str): The first order to be exchanged.
-        machine1 (str): The machine of the first order.
-        order2 (str): The second order to be exchanged.
-        machine2 (str): The machine of the second order.
-        scheduled_orders (dict): Dictionary containing the scheduled orders per machine.
-
-    Returns:
-        None
-    """
-    # Exchange the orders in the schedule
-    idx1 = next(i for i, o in enumerate(scheduled_orders[machine1]) if o['order'] == order1)
-    idx2 = next(i for i, o in enumerate(scheduled_orders[machine2]) if o['order'] == order2)
-    
-    scheduled_orders[machine1][idx1], scheduled_orders[machine2][idx2] = (
-        scheduled_orders[machine2][idx2],
-        scheduled_orders[machine1][idx1]
-    )
-
-def update_schedule(scheduled_orders, current_time, current_colour):
-    """
-    Helper function to update the schedule after an exchange.
-
-    Args:
-        scheduled_orders (dict): Dictionary containing the scheduled orders per machine.
-        current_time (dict): Dictionary containing the current time per machine.
-        current_colour (dict): Dictionary containing the current colour per machine.
-
-    Returns:
-        None
-    """
-    for machine, orders in scheduled_orders.items():
-        current_time[machine] = 0
-        current_colour[machine] = None
-        for order in orders:
-            order_info = orders_df[orders_df['order'] == order['order']].iloc[0]
-            process_time = processing_time(order_info['surface'], machines_df[machines_df['machine'] == machine]['speed'].values[0])
-            set_time = setup_time(current_colour[machine], order_info['colour'], setups_df)
-            
-            start_time = current_time[machine]
-            end_time = start_time + process_time + set_time
-            
-            order['start_time'] = start_time
-            order['end_time'] = end_time
-            order['setup_time'] = set_time
-            current_time[machine] = end_time
-            current_colour[machine] = order_info['colour']
-
-def discrete_improving_search():
+def two_exchange():
     """
     Discrete improving search algorithm for optimising the schedule.
 
@@ -150,22 +98,43 @@ def discrete_improving_search():
     """
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
-    
+
     # Variables to keep track of the current status
     current_time = {machine: 0 for machine in M}
     current_colour = {machine: None for machine in M}
-    update_schedule(scheduled_orders, current_time, current_colour)
     
+    # Helper function to update the schedule after an exchange
+    def update_schedule(scheduled_orders, current_time, current_colour):
+        for machine, orders in scheduled_orders.items():
+            current_time[machine] = 0
+            current_colour[machine] = None
+            for order in orders:
+                order_info = orders_df[orders_df['order'] == order['order']].iloc[0]
+                process_time = processing_time(order_info['surface'], machines_df[machines_df['machine'] == machine]['speed'].values[0])
+                set_time = setup_time(current_colour[machine], order_info['colour'], setups_df)
+
+                start_time = current_time[machine]
+                end_time = start_time + process_time + set_time
+
+                order['start_time'] = start_time
+                order['end_time'] = end_time
+                order['setup_time'] = set_time
+                current_time[machine] = end_time
+                current_colour[machine] = order_info['colour']
+
+    # Initially update the schedule
+    update_schedule(scheduled_orders, current_time, current_colour)
+
     improved = True
     penalty_history = []  # List to store the penalties at each iteration
-    
+
     while improved:
         improved = False
         best_penalty = calculate_penalty_for_schedule(scheduled_orders)
-        
+
         # Append the current penalty to the history list
         penalty_history.append(best_penalty)
-        
+
         # Try swapping each pair of orders on different machines
         for machine1 in scheduled_orders:
             for order1 in scheduled_orders[machine1]:
@@ -175,18 +144,24 @@ def discrete_improving_search():
                     for order2 in scheduled_orders[machine2]:
                         # Make a temporary copy of the schedule
                         temp_scheduled_orders = copy.deepcopy(scheduled_orders)
+
+                        # Exchange the orders directly here
+                        idx1 = next(i for i, o in enumerate(temp_scheduled_orders[machine1]) if o['order'] == order1['order'])
+                        idx2 = next(i for i, o in enumerate(temp_scheduled_orders[machine2]) if o['order'] == order2['order'])
                         
-                        # Exchange the orders
-                        exchange_orders(order1['order'], machine1, order2['order'], machine2, temp_scheduled_orders)
-                        
+                        temp_scheduled_orders[machine1][idx1], temp_scheduled_orders[machine2][idx2] = (
+                            temp_scheduled_orders[machine2][idx2],
+                            temp_scheduled_orders[machine1][idx1]
+                        )
+
                         # Update the schedule after the exchange
                         temp_time = copy.deepcopy(current_time)
                         temp_colour = copy.deepcopy(current_colour)
                         update_schedule(temp_scheduled_orders, temp_time, temp_colour)
-                        
+
                         # Calculate the total penalty for the new schedule
                         temp_penalty = calculate_penalty_for_schedule(temp_scheduled_orders)
-                        
+
                         # If the penalty has improved, accept the exchange
                         if temp_penalty < best_penalty:
                             scheduled_orders = temp_scheduled_orders
@@ -197,19 +172,19 @@ def discrete_improving_search():
                         break
             if improved:
                 break
-        
+
         # If no exchange leads to improvement, stop the algorithm
         if not improved:
             print("No further improvements possible.")
             break
-    
+
     # After optimisation: return the total penalty and the schedule
     total_penalty = calculate_penalty_for_schedule(scheduled_orders)
     print(f"Total penalty: {total_penalty}")
-    
+
     # Append final penalty to history list (optional, depending on whether it is included already)
     penalty_history.append(total_penalty)
-    
+
     # Plot the total penalty against each iteration
     plt.figure(figsize=(10, 6))
     plt.plot(penalty_history, marker='o', linestyle='-', color='b')
@@ -218,11 +193,12 @@ def discrete_improving_search():
     plt.ylabel('Total Penalty')
     plt.grid(True)
     plt.show()
-    
+
     return total_penalty, scheduled_orders
+
 
 
 # Execute the algorithm
 if __name__ == "__main__":
-    total_penalty, optimised_scheduled_orders = discrete_improving_search()
+    total_penalty, optimised_scheduled_orders = two_exchange()
     plot_schedule(optimised_scheduled_orders, '2-exchange', orders_df)
