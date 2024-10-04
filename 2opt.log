@@ -1,0 +1,22 @@
+[2024-10-04 11:36:22,280] Random instance with 5 locations
+[2024-10-04 11:36:22,280] NN tour has distance 236.13; time: 0.000000
+[2024-10-04 11:36:22,280] RND tour has distance 251.33
+[2024-10-04 11:36:22,280] Initial tour has distance 251.33
+[2024-10-04 11:36:22,280] Evaluate move (1,3)->Remove: (0,1) and (2,3); gain: 3.72
+[2024-10-04 11:36:22,280] Evaluate move (1,4)->Remove: (0,1) and (3,4); gain: -38.54
+[2024-10-04 11:36:22,280] Evaluate move (2,4)->Remove: (1,2) and (3,4); gain: 15.20
+[2024-10-04 11:36:22,280] Evaluate move (2,5)->Remove: (1,2) and (4,5); gain: 23.06
+[2024-10-04 11:36:22,280] Evaluate move (3,5)->Remove: (2,3) and (4,5); gain: 26.61
+[2024-10-04 11:36:22,281] Selected feasible improving move (3,5) with gain 26.61, resulting tour has length 224.72
+[2024-10-04 11:36:22,281] Evaluate move (1,3)->Remove: (0,1) and (2,3); gain: -26.79
+[2024-10-04 11:36:22,281] Evaluate move (1,4)->Remove: (0,1) and (3,4); gain: -34.65
+[2024-10-04 11:36:22,281] Evaluate move (2,4)->Remove: (1,2) and (3,4); gain: -15.30
+[2024-10-04 11:36:22,281] Evaluate move (2,5)->Remove: (1,2) and (4,5); gain: 26.96
+[2024-10-04 11:36:22,281] Evaluate move (3,5)->Remove: (2,3) and (4,5); gain: -26.61
+[2024-10-04 11:36:22,281] Selected feasible improving move (2,5) with gain 26.96, resulting tour has length 197.76
+[2024-10-04 11:36:22,281] Evaluate move (1,3)->Remove: (0,1) and (2,3); gain: -38.54
+[2024-10-04 11:36:22,281] Evaluate move (1,4)->Remove: (0,1) and (3,4); gain: -49.85
+[2024-10-04 11:36:22,281] Evaluate move (2,4)->Remove: (1,2) and (3,4); gain: -30.51
+[2024-10-04 11:36:22,281] Evaluate move (2,5)->Remove: (1,2) and (4,5); gain: -26.96
+[2024-10-04 11:36:22,281] Evaluate move (3,5)->Remove: (2,3) and (4,5); gain: -38.37
+[2024-10-04 11:36:22,281] 2-opt tour has distance 197.76; time: 0.001000

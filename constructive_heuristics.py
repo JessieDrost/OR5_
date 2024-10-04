@@ -123,37 +123,49 @@ def greedy_paint_planner():
 
     return total_penalty, scheduled_orders
 
-def plot_schedule(scheduled_orders, method):
-    """Plots a Gantt chart of the scheuled orders
+def plot_schedule(scheduled_orders, method, orders_df):
+    """Plots a Gantt chart of the scheduled orders and marks late orders.
 
     Args:
-        scheduled_orders (dict): every order, their starting time, end time, on which machine and set-up time
-        method (str): method used to calculate schedule
-    """    
+        scheduled_orders (dict): Every order, their start time, end time, on which machine, and set-up time.
+        method (str): Method used to calculate the schedule.
+        orders_df (pd.DataFrame): DataFrame with order details like deadlines and penalties.
+    """
     fig, ax = plt.subplots(figsize=(10, 6))
     
     y_pos = 0
     
     # Colors for visualization
     color_map = {
-         'Green': 'green',
-       'Yellow': 'yellow',
-       'Blue': 'blue',
-      'Red': 'red'
+        'Green': 'green',
+        'Yellow': 'yellow',
+        'Blue': 'blue',
+        'Red': 'red'
     }
+
     for machine, orders in scheduled_orders.items():
-        y_pos += 1  # Voor elke machine
+        y_pos += 1  # For each machine
         for order in orders:
+            order_info = orders_df[orders_df['order'] == order['order']].iloc[0]
             order_color = order['colour']
             processing_time = order['end_time'] - order['start_time'] - order['setup_time']
             setup_time = order['setup_time']
             start_time = order['start_time']
+            end_time = order['end_time']
+            deadline = order_info['deadline']
             
-            # Teken verwerkingstijd
-            ax.barh(y_pos, processing_time, left=start_time + setup_time, color=color_map[order_color], edgecolor='black')
-            ax.text(start_time + setup_time + processing_time / 2, y_pos, f"Order {order['order']}", ha='center', va='center', color='black', rotation=90)
+            # Check if the order is late
+            is_late = end_time > deadline
 
-            # Teken setup tijd
+            # Draw processing time
+            bar_color = color_map[order_color] 
+            ax.barh(y_pos, processing_time, left=start_time + setup_time, color=bar_color, edgecolor='black')
+            
+            # Add order number, mark it with '*' if late
+            label = f"Order {order['order']}" + (' * ' if is_late else '')
+            ax.text(start_time + setup_time + processing_time / 2, y_pos, label, ha='center', va='center', color='black', rotation=90, weight = 'bold')
+
+            # Draw setup time
             if setup_time > 0:
                 ax.barh(y_pos, setup_time, left=start_time, color='gray', edgecolor='black', hatch='//')
     
@@ -164,8 +176,9 @@ def plot_schedule(scheduled_orders, method):
     ax.set_title(f'Gantt Chart for Paint Shop Scheduling using {method}')
     plt.show()
 
+
 # Uitvoeren van het algoritme
 if __name__ == "__main__":
     total_penalty, scheduled_orders = greedy_paint_planner()
     print(f"Total Penalty: {total_penalty}")
-    plot_schedule(scheduled_orders, 'greedy heuristics')
+    plot_schedule(scheduled_orders, 'greedy heuristics', orders_df)
