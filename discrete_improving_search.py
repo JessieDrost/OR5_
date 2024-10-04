@@ -108,10 +108,14 @@ def discrete_improving_search():
     update_schedule(scheduled_orders, current_time, current_color)
     
     improved = True
+    penalty_history = []  # List to store the penalties at each iteration
     
     while improved:
         improved = False
         best_penalty = calculate_penalty_for_schedule(scheduled_orders)
+        
+        # Append the current penalty to the history list
+        penalty_history.append(best_penalty)
         
         # Probeer elk paar orders op verschillende machines te wisselen
         for machine1 in scheduled_orders:
@@ -153,7 +157,21 @@ def discrete_improving_search():
     # Na optimalisatie: geef de totale penalty en het schema
     total_penalty = calculate_penalty_for_schedule(scheduled_orders)
     print(f"Totale penalty: {total_penalty}")
+    
+    # Append final penalty to history list (optional, depending on whether it is included already)
+    penalty_history.append(total_penalty)
+    
+    # Plot the total penalty against each iteration
+    plt.figure(figsize=(10, 6))
+    plt.plot(penalty_history, marker='o', linestyle='-', color='b')
+    plt.title('Total Penalty per Iteration using 2-exchange')
+    plt.xlabel('Iteration')
+    plt.ylabel('Total Penalty')
+    plt.grid(True)
+    plt.show()
+    
     return total_penalty, scheduled_orders
+
 
 # Uitvoeren van het algoritme
 if __name__ == "__main__":
