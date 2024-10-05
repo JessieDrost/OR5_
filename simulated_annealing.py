@@ -2,9 +2,23 @@ import pandas as pd
 import numpy as np
 import copy
 import random
+import logging
 import time
 import matplotlib.pyplot as plt
 from constructive_heuristics import greedy_paint_planner, plot_schedule
+
+# Set up logging for debugging purposes
+VERYBIGNUMBER = 424242424242
+
+logger = logging.getLogger(name='sa-logger')
+logging.basicConfig(level=logging.INFO,
+                    format='[%(asctime)s] %(message)s',
+                    handlers=[logging.FileHandler("sa.log")])
+
+# Parameters for simulated annealing
+initial_temperature = 100
+cooling_rate = 0.998
+iterations_per_temperature = 1000
 
 # Import data from Excel
 orders_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Orders')
@@ -23,19 +37,24 @@ available_orders = B.copy()
 
 # Helper functions
 def processing_time(surface, speed):
+    """Calculate the processing time based on surface area and machine speed."""
     return surface / speed
 
 def setup_time(from_colour, to_colour, setups_df):
+    """Calculate the setup time based on the colour transition."""
     if from_colour == to_colour or from_colour is None:
         return 0
     else:
-        return setups_df[(setups_df['from_colour'] == from_colour) & (setups_df['to_colour'] == to_colour)]['setup_time'].values[0]
+        return setups_df[(setups_df['from_colour'] == from_colour) & 
+                         (setups_df['to_colour'] == to_colour)]['setup_time'].values[0]
 
 def calculate_total_penalty(current_time, deadline, penalty):
+    """Calculate the total penalty based on the delay from the deadline."""
     delay = max(0, current_time - deadline)
     return delay * penalty
 
 def calculate_penalty_for_schedule(scheduled_orders):
+    """Calculate the total penalty for the entire schedule."""
     total_penalty = 0
     for machine, orders in scheduled_orders.items():
         for order in orders:
@@ -46,14 +65,15 @@ def calculate_penalty_for_schedule(scheduled_orders):
             total_penalty += calculate_total_penalty(completion_time, deadline, penalty)
     return total_penalty
 
-# Define update_schedule function here
 def update_schedule(scheduled_orders, current_time, current_colour):
+    """Update the machine schedules and recalculate times and setups."""
     for machine, orders in scheduled_orders.items():
         current_time[machine] = 0
         current_colour[machine] = None
         for order in orders:
             order_info = orders_df[orders_df['order'] == order['order']].iloc[0]
-            process_time = processing_time(order_info['surface'], machines_df[machines_df['machine'] == machine]['speed'].values[0])
+            process_time = processing_time(order_info['surface'], 
+                                           machines_df[machines_df['machine'] == machine]['speed'].values[0])
             set_time = setup_time(current_colour[machine], order_info['colour'], setups_df)
 
             start_time = current_time[machine]
@@ -65,66 +85,9 @@ def update_schedule(scheduled_orders, current_time, current_colour):
             current_time[machine] = end_time
             current_colour[machine] = order_info['colour']
 
-# Two-exchange algorithm
-def two_exchange():
-    total_penalty, scheduled_orders = greedy_paint_planner()
-
-    # Initially update the schedule
-    update_schedule(scheduled_orders, current_time, current_colour)
-
-    improved = True
-    penalty_history = []
-
-    while improved:
-        improved = False
-        best_penalty = calculate_penalty_for_schedule(scheduled_orders)
-        penalty_history.append(best_penalty)
-
-        for machine1 in scheduled_orders:
-            for order1 in scheduled_orders[machine1]:
-                for machine2 in scheduled_orders:
-                    if machine1 == machine2:
-                        continue
-                    for order2 in scheduled_orders[machine2]:
-                        temp_scheduled_orders = copy.deepcopy(scheduled_orders)
-                        idx1 = next(i for i, o in enumerate(temp_scheduled_orders[machine1]) if o['order'] == order1['order'])
-                        idx2 = next(i for i, o in enumerate(temp_scheduled_orders[machine2]) if o['order'] == order2['order'])
-                        temp_scheduled_orders[machine1][idx1], temp_scheduled_orders[machine2][idx2] = (
-                            temp_scheduled_orders[machine2][idx2],
-                            temp_scheduled_orders[machine1][idx1]
-                        )
-
-                        temp_time = copy.deepcopy(current_time)
-                        temp_colour = copy.deepcopy(current_colour)
-                        update_schedule(temp_scheduled_orders, temp_time, temp_colour)
-                        temp_penalty = calculate_penalty_for_schedule(temp_scheduled_orders)
-
-                        if temp_penalty < best_penalty:
-                            scheduled_orders = temp_scheduled_orders
-                            best_penalty = temp_penalty
-                            improved = True
-                            break
-                    if improved:
-                        break
-            if improved:
-                break
-
-        if not improved:
-            break
-
-    total_penalty = calculate_penalty_for_schedule(scheduled_orders)
-    penalty_history.append(total_penalty)
-
-    plt.plot(penalty_history, marker='o', color='b')
-    plt.xlabel('Iteration')
-    plt.ylabel('Total Penalty')
-    plt.grid(True)
-    plt.show()
-
-    return total_penalty, scheduled_orders
-
 # Simulated Annealing
-def simulated_annealing(max_iterations=10000, initial_temp=1000, cooling_rate=0.995):
+def simulated_annealing(max_iterations, initial_temp, cooling_rate):
+    # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
 
     current_solution = copy.deepcopy(scheduled_orders)
@@ -144,13 +107,17 @@ def simulated_annealing(max_iterations=10000, initial_temp=1000, cooling_rate=0.
             order1_idx = random.randint(0, len(new_solution[machine1]) - 1)
             order2_idx = random.randint(0, len(new_solution[machine2]) - 1)
 
+            # Swap two orders between different machines
             new_solution[machine1][order1_idx], new_solution[machine2][order2_idx] = (
                 new_solution[machine2][order2_idx],
                 new_solution[machine1][order1_idx]
             )
 
-            temp_time = copy.deepcopy(current_time)
-            temp_colour = copy.deepcopy(current_colour)
+            # Re-initialize current_time and current_colour after the swap
+            temp_time = {machine: 0 for machine in M}
+            temp_colour = {machine: None for machine in M}
+
+            # Update schedule with the new swapped solution
             update_schedule(new_solution, temp_time, temp_colour)
             new_penalty = calculate_penalty_for_schedule(new_solution)
 
@@ -161,12 +128,16 @@ def simulated_annealing(max_iterations=10000, initial_temp=1000, cooling_rate=0.
                     best_solution = copy.deepcopy(new_solution)
                     best_penalty = new_penalty
             else:
-                acceptance_probability = np.exp((current_penalty - new_penalty) / temperature)
+                # Calculate acceptance probability based on temperature
+                penalty_diff = (current_penalty - new_penalty)
+                acceptance_probability = np.exp(penalty_diff / max(1, temperature))
+
                 if random.random() < acceptance_probability:
                     current_solution = new_solution
                     current_penalty = new_penalty
 
-        temperature *= cooling_rate
+        # Update temperature using cooling schedule
+        temperature = initial_temp / (1 + cooling_rate * iteration)
         penalty_history.append(current_penalty)
 
         if iteration % 100 == 0:
@@ -175,7 +146,9 @@ def simulated_annealing(max_iterations=10000, initial_temp=1000, cooling_rate=0.
         if temperature < 1e-8:
             break
 
+    # Plot the penalty history
     plt.plot(penalty_history, marker='o', color='b')
+    plt.title('Total Penalty per Iteration using Simulated Annealing')
     plt.xlabel('Iteration')
     plt.ylabel('Total Penalty')
     plt.grid(True)
@@ -183,10 +156,7 @@ def simulated_annealing(max_iterations=10000, initial_temp=1000, cooling_rate=0.
 
     return best_penalty, best_solution
 
-# Uncomment the method you want to test first
-total_penalty, optimised_scheduled_orders = simulated_annealing()
+# Call the simulated annealing function
+max_iterations = 5000
+total_penalty, optimised_scheduled_orders = simulated_annealing(max_iterations, initial_temperature, cooling_rate)
 plot_schedule(optimised_scheduled_orders, 'Simulated Annealing', orders_df)
-
-# total_penalty, optimised_scheduled_orders = two_exchange()
-# plot_schedule(optimised_scheduled_orders, '2-exchange', orders_df)
-
