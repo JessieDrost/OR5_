@@ -7,14 +7,35 @@ import logging
 import time
 import matplotlib.pyplot as plt
 
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
+
+# Utility function to calculate elapsed time
+def log_elapsed_time(start_time, description=""):
+    """
+    Logs the elapsed time since the start time.
+    
+    Args:
+        start_time (float): The start time to measure from.
+        description (str): Description of what was being timed.
+    """
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    logger.info(f"{description} took {elapsed_time:.4f} seconds.")
+    return elapsed_time
+
 # Set needed values
 VERYBIGNUMBER = 424242424242
 random.seed(70)
+start_time = time.time()
 
 # Import excel data
+logger.info("Importing data from Excel files...")
 orders_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Orders')
 machines_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Machines')
 setups_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Setups')
+log_elapsed_time(start_time, "Data import")
 
 # Define sets
 B = orders_df['order'].tolist()  # Bestellingen
@@ -96,6 +117,9 @@ def greedy_paint_planner():
     # Sort machines by speed (fastest first)
     sorted_machines = machines_df.sort_values(by='speed', ascending=False)['machine'].tolist()
     
+    # Start timing
+    start_time = time.time()
+    
     # Loop until all orders are assigned
     while available_orders:
         for machine in sorted_machines:
@@ -151,6 +175,9 @@ def greedy_paint_planner():
                 available_orders.remove(best_order)
                 total_penalty += max_penalty  # Add penalty
 
+    # Log elapsed time for greedy algorithm
+    log_elapsed_time(start_time, "Greedy paint planner")
+
     return total_penalty, scheduled_orders
 
 # Function for discrete improving search
@@ -162,6 +189,9 @@ def two_exchange():
         int: Total penalty after optimisation.
         dict: Optimised schedule with orders per machine.
     """
+    # Start timing
+    start_time = time.time()
+    
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
 
@@ -260,10 +290,17 @@ def two_exchange():
     plt.grid(True)
     plt.show()
 
+    # Log elapsed time for 2 exchange
+    log_elapsed_time(start_time, "2 exchange")
+    
     return total_penalty, scheduled_orders
 
 #Function for meta-heuristics
 def simulated_annealing(max_iterations, initial_temp, cooling_rate):
+    
+    # Start timing
+    start_time = time.time()
+    
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
 
@@ -330,6 +367,9 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate):
     plt.ylabel('Total Penalty')
     plt.grid(True)
     plt.show()
+    
+    # Log elapsed time for simulated annealing
+    log_elapsed_time(start_time, "Simulated Annealing")
 
     return best_penalty, best_solution
 
@@ -389,24 +429,24 @@ def plot_schedule(scheduled_orders, method, orders_df):
     
 def main():
     # Call greedy_paint_planner to get the initial schedule and plot it
-    print("Generating schedule using Greedy Paint Planner...")
+    logger.info("Generating schedule using Greedy Paint Planner...")
     greedy_penalty, greedy_schedule = greedy_paint_planner()
-    print(f"Greedy total penalty: {greedy_penalty}")
+    logger.info(f"Greedy total penalty: {greedy_penalty}")
     plot_schedule(greedy_schedule, 'Constructive Heuristics', orders_df)
     
     # Call two_exchange to optimize the schedule and plot it
-    print("\nImproving schedule using 2-Exchange...")
+    logger.info("\nImproving schedule using 2-Exchange...")
     two_exchange_penalty, two_exchange_schedule = two_exchange()
-    print(f"2-Exchange total penalty: {two_exchange_penalty}")
+    logger.info(f"2-Exchange total penalty: {two_exchange_penalty}")
     plot_schedule(two_exchange_schedule, '2-Exchange', orders_df)
     
     # Call simulated_annealing to further optimize and plot it
-    print("\nImproving schedule using Simulated Annealing...")
+    logger.info("\nImproving schedule using Simulated Annealing...")
     max_iterations = 5000  # Set the number of iterations for Simulated Annealing
     initial_temp = 100     # Set the initial temperature
     cooling_rate = 0.98     # Set the cooling rate
     sa_penalty, sa_schedule = simulated_annealing(max_iterations, initial_temp, cooling_rate)
-    print(f"Simulated Annealing total penalty: {sa_penalty}")
+    logger.info(f"Simulated Annealing total penalty: {sa_penalty}")
     plot_schedule(sa_schedule, 'Simulated Annealing', orders_df)
 
 if __name__ == "__main__":
