@@ -10,7 +10,7 @@ from constructive_heuristics import greedy_paint_planner, plot_schedule
 # Set up logging for debugging purposes
 VERYBIGNUMBER = 424242424242
 
-random.seed(50)
+random.seed(70)
 logger = logging.getLogger(name='sa-logger')
 logging.basicConfig(level=logging.INFO,
                     format='[%(asctime)s] %(message)s',
