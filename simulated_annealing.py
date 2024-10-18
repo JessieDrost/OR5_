@@ -17,8 +17,9 @@ logging.basicConfig(level=logging.INFO,
                     handlers=[logging.FileHandler("sa.log")])
 
 # Parameters for simulated annealing
+
 initial_temperature = 100
-cooling_rate = 0.998
+cooling_rate = 0.9995
 iterations_per_temperature = 1000
 
 # Import data from Excel
@@ -87,6 +88,7 @@ def update_schedule(scheduled_orders, current_time, current_colour):
             current_colour[machine] = order_info['colour']
 
 # Simulated Annealing
+# Simulated Annealing
 def simulated_annealing(max_iterations, initial_temp, cooling_rate):
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
@@ -99,6 +101,8 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate):
     best_penalty = current_penalty
 
     penalty_history = [current_penalty]
+    best_penalty_history = [best_penalty]
+    temperature_history = [temperature]
 
     for iteration in range(max_iterations):
         new_solution = copy.deepcopy(current_solution)
@@ -139,19 +143,36 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate):
 
         # Update temperature using cooling schedule
         temperature = initial_temp / (1 + cooling_rate * iteration)
+
+        # Track penalties and temperature
         penalty_history.append(current_penalty)
+        best_penalty_history.append(best_penalty)
+        temperature_history.append(temperature)
 
         if iteration % 100 == 0:
-            print(f"Iteration {iteration}, Current Penalty: {current_penalty}, Best Penalty: {best_penalty}")
+            print(f"Iteration {iteration}, Current Penalty: {current_penalty}, Best Penalty: {best_penalty}, Temperature: {temperature}")
 
         if temperature < 1e-8:
             break
 
-    # Plot the penalty history
-    plt.plot(penalty_history, marker='o', color='b')
-    plt.title('Total Penalty per Iteration using Simulated Annealing')
-    plt.xlabel('Iteration')
-    plt.ylabel('Total Penalty')
+    # Plot the penalty and temperature history
+    fig, ax1 = plt.subplots()
+
+    ax1.set_xlabel('Iteration')
+    ax1.set_ylabel('Total Penalty', color='b')
+    ax1.plot(penalty_history, label='Current Penalty', color='b', marker='o')
+    ax1.plot(best_penalty_history, label='Best Penalty', color='g', linestyle='--')
+    ax1.tick_params(axis='y', labelcolor='b')
+    ax1.legend(loc='upper left')
+
+    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+    ax2.set_ylabel('Temperature', color='r')  # we already handled the x-label with ax1
+    ax2.plot(temperature_history, label='Temperature', color='r', linestyle='-.')
+    ax2.tick_params(axis='y', labelcolor='r')
+    ax2.legend(loc='upper right')
+
+    plt.title('Simulated Annealing: Penalty and Temperature over Iterations')
+    fig.tight_layout()  # to ensure the plot fits within the figure
     plt.grid(True)
     plt.show()
 
