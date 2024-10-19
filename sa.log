@@ -1,0 +1,113 @@
+[2024-10-19 21:12:19,602] Accepted worse solution at iteration 0 with penalty 916.4333333333332
+[2024-10-19 21:12:26,118] Accepted worse solution at iteration 444 with penalty 490.3888888888888
+[2024-10-19 21:12:27,438] Accepted worse solution at iteration 535 with penalty 399.1888888888888
+[2024-10-19 21:12:29,269] Accepted worse solution at iteration 660 with penalty 399.1888888888888
+[2024-10-19 21:12:33,477] Accepted worse solution at iteration 947 with penalty 399.1888888888888
+[2024-10-19 21:12:35,735] Accepted worse solution at iteration 1101 with penalty 399.1888888888888
+[2024-10-19 21:12:36,634] Accepted worse solution at iteration 1162 with penalty 399.1888888888888
+[2024-10-19 21:12:37,567] Accepted worse solution at iteration 1225 with penalty 399.1888888888888
+[2024-10-19 21:12:40,187] Accepted worse solution at iteration 1404 with penalty 399.1888888888888
+[2024-10-19 21:12:44,665] Accepted worse solution at iteration 1708 with penalty 399.1888888888888
+[2024-10-19 21:12:46,358] Accepted worse solution at iteration 1823 with penalty 399.1888888888888
+[2024-10-19 21:12:48,401] Accepted worse solution at iteration 1962 with penalty 397.38888888888874
+[2024-10-19 21:12:53,238] Accepted worse solution at iteration 2289 with penalty 397.38888888888874
+[2024-10-19 21:12:55,389] Accepted worse solution at iteration 2435 with penalty 397.38888888888874
+[2024-10-19 21:12:55,856] Accepted worse solution at iteration 2467 with penalty 397.38888888888874
+[2024-10-19 21:12:57,216] Accepted worse solution at iteration 2560 with penalty 397.38888888888874
+[2024-10-19 21:13:01,716] Accepted worse solution at iteration 2866 with penalty 397.38888888888874
+[2024-10-19 21:13:02,485] Accepted worse solution at iteration 2917 with penalty 397.38888888888874
+[2024-10-19 21:13:03,618] Accepted worse solution at iteration 2994 with penalty 397.38888888888874
+[2024-10-19 21:13:05,791] Accepted worse solution at iteration 3141 with penalty 397.38888888888874
+[2024-10-19 21:13:07,062] Accepted worse solution at iteration 3228 with penalty 397.38888888888874
+[2024-10-19 21:13:11,174] Accepted worse solution at iteration 3503 with penalty 397.38888888888874
+[2024-10-19 21:13:12,227] Accepted worse solution at iteration 3575 with penalty 397.38888888888874
+[2024-10-19 21:13:12,695] Accepted worse solution at iteration 3607 with penalty 397.38888888888874
+[2024-10-19 21:13:18,009] Accepted worse solution at iteration 3970 with penalty 397.38888888888874
+[2024-10-19 21:13:20,598] Accepted worse solution at iteration 4146 with penalty 397.38888888888874
+[2024-10-19 21:13:21,464] Accepted worse solution at iteration 4205 with penalty 397.38888888888874
+[2024-10-19 21:13:27,636] Accepted worse solution at iteration 4616 with penalty 397.38888888888874
+[2024-10-19 21:13:30,298] Accepted worse solution at iteration 4792 with penalty 397.38888888888874
+[2024-10-19 21:13:31,950] Accepted worse solution at iteration 4903 with penalty 397.38888888888874
+[2024-10-19 21:25:58,122] Detonation at iteration 762
+[2024-10-19 21:26:07,952] Detonation at iteration 1390
+[2024-10-19 21:26:12,546] Detonation at iteration 1691
+[2024-10-19 21:26:21,236] Detonation at iteration 2246
+[2024-10-19 21:26:25,900] Detonation at iteration 2549
+[2024-10-19 21:26:30,502] Detonation at iteration 2850
+[2024-10-19 21:26:35,240] Detonation at iteration 3154
+[2024-10-19 21:26:39,979] Detonation at iteration 3455
+[2024-10-19 21:26:44,753] Detonation at iteration 3758
+[2024-10-19 21:26:49,338] Detonation at iteration 4059
+[2024-10-19 21:26:54,040] Detonation at iteration 4361
+[2024-10-19 21:26:58,759] Detonation at iteration 4662
+[2024-10-19 21:27:03,415] Detonation at iteration 4964
+[2024-10-19 21:27:29,805] Detonation at iteration 762
+[2024-10-19 21:27:39,339] Detonation at iteration 1390
+[2024-10-19 21:27:43,833] Detonation at iteration 1691
+[2024-10-19 21:27:52,314] Detonation at iteration 2246
+[2024-10-19 21:27:56,886] Detonation at iteration 2549
+[2024-10-19 21:28:01,391] Detonation at iteration 2850
+[2024-10-19 21:28:05,978] Detonation at iteration 3154
+[2024-10-19 21:28:10,583] Detonation at iteration 3455
+[2024-10-19 21:28:15,159] Detonation at iteration 3758
+[2024-10-19 21:28:19,667] Detonation at iteration 4059
+[2024-10-19 21:28:24,182] Detonation at iteration 4361
+[2024-10-19 21:28:28,761] Detonation at iteration 4662
+[2024-10-19 21:28:33,365] Detonation at iteration 4964
+[2024-10-19 21:29:00,696] Detonation at iteration 762
+[2024-10-19 21:29:10,227] Detonation at iteration 1390
+[2024-10-19 21:29:14,762] Detonation at iteration 1691
+[2024-10-19 21:29:23,276] Detonation at iteration 2246
+[2024-10-19 21:29:27,929] Detonation at iteration 2549
+[2024-10-19 21:29:32,469] Detonation at iteration 2850
+[2024-10-19 21:29:37,143] Detonation at iteration 3154
+[2024-10-19 21:29:41,749] Detonation at iteration 3455
+[2024-10-19 21:29:46,332] Detonation at iteration 3758
+[2024-10-19 21:29:50,862] Detonation at iteration 4059
+[2024-10-19 21:29:55,445] Detonation at iteration 4361
+[2024-10-19 21:30:00,062] Detonation at iteration 4662
+[2024-10-19 21:30:04,658] Detonation at iteration 4964
+[2024-10-19 21:30:40,450] Detonation at iteration 320
+[2024-10-19 21:30:44,210] Detonation at iteration 561
+[2024-10-19 21:30:45,781] Detonation at iteration 662
+[2024-10-19 21:30:47,350] Detonation at iteration 762
+[2024-10-19 21:30:48,930] Detonation at iteration 862
+[2024-10-19 21:30:50,916] Detonation at iteration 990
+[2024-10-19 21:30:54,007] Detonation at iteration 1189
+[2024-10-19 21:30:55,572] Detonation at iteration 1290
+[2024-10-19 21:30:57,102] Detonation at iteration 1390
+[2024-10-19 21:30:58,663] Detonation at iteration 1491
+[2024-10-19 21:31:00,199] Detonation at iteration 1591
+[2024-10-19 21:31:01,734] Detonation at iteration 1691
+[2024-10-19 21:31:03,332] Detonation at iteration 1792
+[2024-10-19 21:31:04,928] Detonation at iteration 1893
+[2024-10-19 21:31:07,349] Detonation at iteration 2046
+[2024-10-19 21:31:08,907] Detonation at iteration 2146
+[2024-10-19 21:31:10,465] Detonation at iteration 2246
+[2024-10-19 21:31:12,050] Detonation at iteration 2347
+[2024-10-19 21:31:13,629] Detonation at iteration 2448
+[2024-10-19 21:31:15,218] Detonation at iteration 2549
+[2024-10-19 21:31:16,827] Detonation at iteration 2650
+[2024-10-19 21:31:18,398] Detonation at iteration 2750
+[2024-10-19 21:31:20,015] Detonation at iteration 2850
+[2024-10-19 21:31:21,629] Detonation at iteration 2952
+[2024-10-19 21:31:23,206] Detonation at iteration 3053
+[2024-10-19 21:31:24,781] Detonation at iteration 3154
+[2024-10-19 21:31:26,380] Detonation at iteration 3255
+[2024-10-19 21:31:27,953] Detonation at iteration 3355
+[2024-10-19 21:31:29,507] Detonation at iteration 3455
+[2024-10-19 21:31:31,081] Detonation at iteration 3556
+[2024-10-19 21:31:32,661] Detonation at iteration 3658
+[2024-10-19 21:31:34,211] Detonation at iteration 3758
+[2024-10-19 21:31:35,746] Detonation at iteration 3858
+[2024-10-19 21:31:37,291] Detonation at iteration 3958
+[2024-10-19 21:31:38,844] Detonation at iteration 4059
+[2024-10-19 21:31:40,405] Detonation at iteration 4160
+[2024-10-19 21:31:42,006] Detonation at iteration 4261
+[2024-10-19 21:31:43,573] Detonation at iteration 4361
+[2024-10-19 21:31:45,127] Detonation at iteration 4461
+[2024-10-19 21:31:46,687] Detonation at iteration 4561
+[2024-10-19 21:31:48,268] Detonation at iteration 4662
+[2024-10-19 21:31:49,817] Detonation at iteration 4762
+[2024-10-19 21:31:51,390] Detonation at iteration 4863
+[2024-10-19 21:31:52,961] Detonation at iteration 4964
