@@ -89,7 +89,7 @@ def update_schedule(scheduled_orders, current_time, current_colour):
 
 # Simulated Annealing
 # Simulated Annealing
-def simulated_annealing(max_iterations, initial_temp, cooling_rate, detonation_threshold=100, detonation_factor=30):
+def simulated_annealing(max_iterations, initial_temp, cooling_rate, detonation_threshold=300):
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
 
@@ -108,68 +108,77 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate, detonation_t
 
     for iteration in range(max_iterations):
         new_solution = copy.deepcopy(current_solution)
-        machine1, machine2 = random.sample(M, 2)
+        
+        # Neighborhood search: Swap orders within the same machine or between machines
+        if random.random() < 0.5:  # Swap within a machine (small local change)
+            machine = random.choice(M)
+            if len(new_solution[machine]) > 1:
+                order1_idx, order2_idx = random.sample(range(len(new_solution[machine])), 2)
+                new_solution[machine][order1_idx], new_solution[machine][order2_idx] = (
+                    new_solution[machine][order2_idx],
+                    new_solution[machine][order1_idx]
+                )
+        else:  # Swap orders between two machines
+            machine1, machine2 = random.sample(M, 2)
+            if new_solution[machine1] and new_solution[machine2]:
+                order1_idx = random.randint(0, len(new_solution[machine1]) - 1)
+                order2_idx = random.randint(0, len(new_solution[machine2]) - 1)
+                new_solution[machine1][order1_idx], new_solution[machine2][order2_idx] = (
+                    new_solution[machine2][order2_idx],
+                    new_solution[machine1][order1_idx]
+                )
 
-        if new_solution[machine1] and new_solution[machine2]:
-            order1_idx = random.randint(0, len(new_solution[machine1]) - 1)
-            order2_idx = random.randint(0, len(new_solution[machine2]) - 1)
+        # Re-initialize current_time and current_colour after the swap
+        temp_time = {machine: 0 for machine in M}
+        temp_colour = {machine: None for machine in M}
 
-            # Swap two orders between different machines
-            new_solution[machine1][order1_idx], new_solution[machine2][order2_idx] = (
-                new_solution[machine2][order2_idx],
-                new_solution[machine1][order1_idx]
-            )
+        # Update schedule with the new swapped solution
+        update_schedule(new_solution, temp_time, temp_colour)
+        new_penalty = calculate_penalty_for_schedule(new_solution)
 
-            # Re-initialize current_time and current_colour after the swap
-            temp_time = {machine: 0 for machine in M}
-            temp_colour = {machine: None for machine in M}
+        # Accept or reject new solution based on penalty and temperature
+        penalty_diff = new_penalty - current_penalty
 
-            # Update schedule with the new swapped solution
-            update_schedule(new_solution, temp_time, temp_colour)
-            new_penalty = calculate_penalty_for_schedule(new_solution)
-
-            # Check if the new solution is better or worse
-            if new_penalty < current_penalty:
-                # Accept the better solution
+        if penalty_diff < 0:
+            # Accept the better solution
+            current_solution = new_solution
+            current_penalty = new_penalty
+            no_improvement_count = 0  # Reset improvement counter
+            if new_penalty < best_penalty:
+                best_solution = copy.deepcopy(new_solution)
+                best_penalty = new_penalty
+        else:
+            # Accept worse solution with a probability dependent on the temperature
+            acceptance_probability = np.exp(-penalty_diff / max(temperature, 1e-8))
+            if random.random() < acceptance_probability:
                 current_solution = new_solution
                 current_penalty = new_penalty
-                no_improvement_count = 0  # Reset no improvement count
-                if new_penalty < best_penalty:
-                    best_solution = copy.deepcopy(new_solution)
-                    best_penalty = new_penalty
             else:
-                # Calculate acceptance probability based on temperature
-                penalty_diff = (current_penalty - new_penalty)
-                acceptance_probability = np.exp(penalty_diff / max(1, temperature))
+                no_improvement_count += 1
 
-                if random.random() < acceptance_probability:
-                    # Accept worse solution with probability
-                    current_solution = new_solution
-                    current_penalty = new_penalty
-                else:
-                    no_improvement_count += 1
-
-            # Detonation: if no improvement for a long time, force a worse solution
-            if no_improvement_count >= detonation_threshold:
-                logger.info(f"Detonation at iteration {iteration}")
-                # Increase temperature to allow for more exploration
-                temperature *= detonation_factor
-                no_improvement_count = 0  # Reset count
-
-        # Update temperature using cooling schedule
-        temperature = initial_temp / (1 + cooling_rate * iteration)
+        # Cooling: Update temperature using the exponential schedule
+        temperature *= cooling_rate
 
         # Track penalties and temperature
         penalty_history.append(current_penalty)
         best_penalty_history.append(best_penalty)
         temperature_history.append(temperature)
 
-        if iteration % 100 == 0:
-            print(f"Iteration {iteration}, Current Penalty: {current_penalty}, Best Penalty: {best_penalty}, Temperature: {temperature}")
+        # Detonation: if no improvement after a set number of iterations
+        if no_improvement_count >= detonation_threshold:
+            logger.info(f"Detonation at iteration {iteration}")
+            # Reset current solution to a completely random new solution (force exploration)
+            current_solution = copy.deepcopy(scheduled_orders)
+            current_penalty = calculate_penalty_for_schedule(current_solution)
+            no_improvement_count = 0  # Reset counter
+            temperature *= 1.5  # Slightly raise the temperature to escape local optima
 
         # Early stop if temperature is too low
         if temperature < 1e-8:
             break
+
+        if iteration % 100 == 0:
+            print(f"Iteration {iteration}, Current Penalty: {current_penalty}, Best Penalty: {best_penalty}, Temperature: {temperature}")
 
     # Plot the penalty and temperature history
     fig, ax1 = plt.subplots()
