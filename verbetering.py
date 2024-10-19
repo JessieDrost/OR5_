@@ -88,7 +88,6 @@ def update_schedule(scheduled_orders, current_time, current_colour):
             current_colour[machine] = order_info['colour']
 
 # Simulated Annealing
-# Simulated Annealing
 def simulated_annealing(max_iterations, initial_temp, cooling_rate, detonation_threshold=300):
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
@@ -207,4 +206,3 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate, detonation_t
 max_iterations = 10000
 total_penalty, optimised_scheduled_orders = simulated_annealing(max_iterations, initial_temperature, cooling_rate)
 plot_schedule(optimised_scheduled_orders, 'Simulated Annealing', orders_df)
-#a
