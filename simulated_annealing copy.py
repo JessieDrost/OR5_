@@ -204,6 +204,7 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate, detonation_t
     return best_penalty, best_solution
 
 # Call the simulated annealing function
-max_iterations = 5000
+max_iterations = 10000
 total_penalty, optimised_scheduled_orders = simulated_annealing(max_iterations, initial_temperature, cooling_rate)
 plot_schedule(optimised_scheduled_orders, 'Simulated Annealing', orders_df)
+#a
