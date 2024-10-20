@@ -17,3 +17,6 @@
 [2024-10-20 16:31:18,732] No further improvements possible.
 [2024-10-20 16:31:20,748] 2-Exchange total penalty: 392.988889
 [2024-10-20 16:31:20,748] Elapsed time Discrete Improving Search (te): 52.792071
+[2024-10-20 16:58:41,076] Improving schedule using Simulated Annealing...
+[2024-10-20 17:00:00,850] Simulated Annealing total penalty: 397.39
+[2024-10-20 17:00:00,850] Elapsed time Meta Heuristics (sa): 79.774355
