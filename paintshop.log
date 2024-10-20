@@ -23,3 +23,55 @@
 [2024-10-20 18:40:43,996] Simulated Annealing total penalty: 356.59
 [2024-10-20 18:40:43,996] Elapsed time Meta Heuristics (sa): 26.714122
 [2024-10-20 18:40:45,648] ------------------- END OF OPTIMIZATION -------------------
+[2024-10-20 18:59:58,449] Importing data from Excel files...
+[2024-10-20 18:59:58,687] Generating schedule using Greedy Paint Planner...
+[2024-10-20 18:59:59,069] Greedy total penalty: 5289.68
+[2024-10-20 18:59:59,069] Elapsed time Constructive Heuristics (gpp): 0.381814
+[2024-10-20 19:00:09,399] Improving schedule using 2-Exchange...
+[2024-10-20 19:00:42,856] Importing data from Excel files...
+[2024-10-20 19:00:43,022] Generating schedule using Greedy Paint Planner...
+[2024-10-20 19:00:43,445] Greedy total penalty: 5289.68
+[2024-10-20 19:00:43,445] Elapsed time Constructive Heuristics (gpp): 0.423689
+[2024-10-20 19:01:23,955] Improving schedule using 2-Exchange...
+[2024-10-20 19:11:37,875] No further improvements possible.
+[2024-10-20 19:11:40,549] 2-Exchange total penalty: 1690.588235
+[2024-10-20 19:11:40,549] Elapsed time Discrete Improving Search (te): 616.594073
+[2024-10-20 19:11:41,967] Improving schedule using Simulated Annealing...
+[2024-10-20 19:11:42,017] Iteration 0, Current Penalty: 5201.676470588235, Best Penalty: 5201.676470588235, Temperature: 98.0
+[2024-10-20 19:11:45,946] Iteration 400, Current Penalty: 4204.323529411764, Best Penalty: 4204.323529411764, Temperature: 1.7236187673607084
+[2024-10-20 19:11:46,791] Iteration 500, Current Penalty: 3884.0588235294117, Best Penalty: 3884.0588235294117, Temperature: 0.708579436546812
+[2024-10-20 19:11:48,920] Iteration 700, Current Penalty: 3764.8823529411766, Best Penalty: 3764.8823529411766, Temperature: 0.07994746903140332
+[2024-10-20 19:11:50,878] Iteration 900, Current Penalty: 3513.0000000000005, Best Penalty: 3513.0000000000005, Temperature: 0.00939223051202828
+[2024-10-20 19:11:54,426] Iteration 1300, Current Penalty: 3170.2647058823527, Best Penalty: 3170.2647058823527, Temperature: 0.0001941669352916683
+[2024-10-20 19:11:55,333] Iteration 1400, Current Penalty: 3170.2647058823527, Best Penalty: 3170.2647058823527, Temperature: 7.21527660292477e-05
+[2024-10-20 19:11:56,344] Iteration 1500, Current Penalty: 3170.2647058823527, Best Penalty: 3170.2647058823527, Temperature: 2.4236007160768272e-05
+[2024-10-20 19:11:57,258] Iteration 1600, Current Penalty: 2977.470588235294, Best Penalty: 2977.470588235294, Temperature: 8.649498594839523e-06
+[2024-10-20 19:12:00,875] Iteration 2000, Current Penalty: 2682.4705882352946, Best Penalty: 2682.4705882352946, Temperature: 1.4318063957314974e-07
+[2024-10-20 19:12:01,851] Iteration 2100, Current Penalty: 2680.3235294117653, Best Penalty: 2680.3235294117653, Temperature: 4.8094164603081125e-08
+[2024-10-20 19:12:06,901] Simulated Annealing total penalty: 2678.56
+[2024-10-20 19:12:06,901] Elapsed time Meta Heuristics (sa): 24.933696
+[2024-10-20 19:12:09,384] ------------------- END OF OPTIMIZATION -------------------
+[2024-10-20 19:12:14,240] Importing data from Excel files...
+[2024-10-20 19:12:14,425] Generating schedule using Greedy Paint Planner...
+[2024-10-20 19:12:14,846] Greedy total penalty: 5289.68
+[2024-10-20 19:12:14,846] Elapsed time Constructive Heuristics (gpp): 0.420481
+[2024-10-20 19:12:18,891] Improving schedule using 2-Exchange...
+[2024-10-20 19:18:51,855] No further improvements possible.
+[2024-10-20 19:18:54,850] 2-Exchange total penalty: 1690.588235
+[2024-10-20 19:18:54,851] Elapsed time Discrete Improving Search (te): 395.960056
+[2024-10-20 19:18:57,451] Improving schedule using Simulated Annealing...
+[2024-10-20 19:18:57,509] Iteration 0, Current Penalty: 5201.676470588235, Best Penalty: 5201.676470588235, Temperature: 98.0
+[2024-10-20 19:19:01,560] Iteration 400, Current Penalty: 4204.323529411764, Best Penalty: 4204.323529411764, Temperature: 1.7236187673607084
+[2024-10-20 19:19:02,420] Iteration 500, Current Penalty: 3884.0588235294117, Best Penalty: 3884.0588235294117, Temperature: 0.708579436546812
+[2024-10-20 19:19:04,583] Iteration 700, Current Penalty: 3764.8823529411766, Best Penalty: 3764.8823529411766, Temperature: 0.07994746903140332
+[2024-10-20 19:19:06,592] Iteration 900, Current Penalty: 3513.0000000000005, Best Penalty: 3513.0000000000005, Temperature: 0.00939223051202828
+[2024-10-20 19:19:10,180] Iteration 1300, Current Penalty: 3170.2647058823527, Best Penalty: 3170.2647058823527, Temperature: 0.0001941669352916683
+[2024-10-20 19:19:11,077] Iteration 1400, Current Penalty: 3170.2647058823527, Best Penalty: 3170.2647058823527, Temperature: 7.21527660292477e-05
+[2024-10-20 19:19:12,079] Iteration 1500, Current Penalty: 3170.2647058823527, Best Penalty: 3170.2647058823527, Temperature: 2.4236007160768272e-05
+[2024-10-20 19:19:13,022] Iteration 1600, Current Penalty: 2977.470588235294, Best Penalty: 2977.470588235294, Temperature: 8.649498594839523e-06
+[2024-10-20 19:19:17,059] Iteration 2000, Current Penalty: 2682.4705882352946, Best Penalty: 2682.4705882352946, Temperature: 1.4318063957314974e-07
+[2024-10-20 19:19:18,056] Iteration 2100, Current Penalty: 2680.3235294117653, Best Penalty: 2680.3235294117653, Temperature: 4.8094164603081125e-08
+[2024-10-20 19:19:24,572] Simulated Annealing total penalty: 2678.56
+[2024-10-20 19:19:24,572] Elapsed time Meta Heuristics (sa): 27.121464
+[2024-10-20 19:19:26,281] Exporting to Excel...
+[2024-10-20 19:19:26,339] ------------------- END OF OPTIMIZATION -------------------

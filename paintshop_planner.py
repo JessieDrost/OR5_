@@ -18,8 +18,8 @@ VERYBIGNUMBER = 424242424242
 random.seed(70)
 #start_time = time.time()
 
-file_path = 'paintshop_september_2024.xlsx'
-#file_path = 'paintshop_november_2024.xlsx'
+#file_path = 'paintshop_september_2024.xlsx'
+file_path = 'paintshop_november_2024.xlsx'
 
 # Import excel data
 logger.info("Importing data from Excel files...")
@@ -434,8 +434,51 @@ def plot_schedule(scheduled_orders, method, orders_df):
     ax.set_yticklabels([f"Machine {m}" for m in scheduled_orders.keys()])
     ax.set_xlabel('Time')
     ax.set_ylabel('Machines')
-    ax.set_title(f'Gantt Chart for Paint Shop Scheduling using {method}')
+    ax.set_title(f'Gantt Chart for Paint Shop Scheduling using {method}. {file_path}')
     plt.show()
+    
+    import pandas as pd
+
+def export_schedule_to_excel(scheduled_orders, file_path, orders_df):
+    """
+    Creates a Pandas DataFrame of the schedule and exports it to an Excel file.
+
+    Args:
+        scheduled_orders (dict): The scheduled orders with start time, end time, machine, and setup time.
+        file_path (str): Path to the Excel file to be created.
+        orders_df (pd.DataFrame): DataFrame containing the original order details (e.g., deadlines, penalties).
+
+    Returns:
+        None
+    """
+    # Initialize list to store schedule data
+    schedule_data = []
+
+    # Loop through scheduled orders and extract relevant information
+    for machine, orders in scheduled_orders.items():
+        for order in orders:
+            # Find order information in orders_df
+            order_info = orders_df[orders_df['order'] == order['order']].iloc[0]
+
+            # Collect details for each order
+            schedule_data.append({
+                'Machine': machine,
+                'Order': order['order'],
+                'Start Time': order['start_time'],
+                'End Time': order['end_time'],
+                'Setup Time': order['setup_time'],
+                'Processing Time': order['end_time'] - order['start_time'] - order['setup_time'],
+                'Color': order['colour'],
+                'Deadline': order_info['deadline'],
+                'Late': order['end_time'] > order_info['deadline']  # Check if the order is late
+            })
+
+    # Create a Pandas DataFrame
+    schedule_df = pd.DataFrame(schedule_data)
+
+    # Export the DataFrame to an Excel file
+    schedule_df.to_excel(f'Schedule {file_path}', index=False)
+
     
 def main():
     # Call greedy_paint_planner to get the initial schedule and plot it
@@ -467,6 +510,10 @@ def main():
     end_time_sa = time.time()
     logger.info(msg=f'Elapsed time Meta Heuristics (sa): {end_time_sa - start_time_sa:.6f}')
     plot_schedule(sa_schedule, 'Simulated Annealing', orders_df)
+    
+    # Export schedule to excel
+    logger.info(msg='Exporting to Excel...')
+    export_schedule_to_excel(scheduled_orders, file_path, orders_df)
     logger.info(msg='------------------- END OF OPTIMIZATION -------------------')
 
 if __name__ == "__main__":
