@@ -18,11 +18,14 @@ VERYBIGNUMBER = 424242424242
 random.seed(70)
 #start_time = time.time()
 
+file_path = 'paintshop_september_2024.xlsx'
+#file_path = 'paintshop_november_2024.xlsx'
+
 # Import excel data
 logger.info("Importing data from Excel files...")
-orders_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Orders')
-machines_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Machines')
-setups_df = pd.read_excel('paintshop_september_2024.xlsx', sheet_name='Setups')
+orders_df = pd.read_excel(file_path, sheet_name='Orders')
+machines_df = pd.read_excel(file_path, sheet_name='Machines')
+setups_df = pd.read_excel(file_path, sheet_name='Setups')
 
 # Define sets
 B = orders_df['order'].tolist()  # Bestellingen
@@ -283,10 +286,8 @@ def two_exchange():
     return total_penalty, scheduled_orders
 
 #Function for meta-heuristics
+
 def simulated_annealing(max_iterations, initial_temp, cooling_rate):
-    
-    # Start timing
-    #start_time_sa = time.time()
     
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
@@ -299,20 +300,33 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate):
     best_penalty = current_penalty
 
     penalty_history = [current_penalty]
-
+    best_penalty_history = [best_penalty]
+    temperature_history = [temperature]
+    
+    detonation_threshold = 300
+    
+    no_improvement_count = 0  # Counter for detecting stagnation (no improvements)
+    
     for iteration in range(max_iterations):
         new_solution = copy.deepcopy(current_solution)
-        machine1, machine2 = random.sample(M, 2)
-
-        if new_solution[machine1] and new_solution[machine2]:
-            order1_idx = random.randint(0, len(new_solution[machine1]) - 1)
-            order2_idx = random.randint(0, len(new_solution[machine2]) - 1)
-
-            # Swap two orders between different machines
-            new_solution[machine1][order1_idx], new_solution[machine2][order2_idx] = (
-                new_solution[machine2][order2_idx],
-                new_solution[machine1][order1_idx]
-            )
+         # Neighborhood search: Swap orders within the same machine or between machines
+        if random.random() < 0.5:  # Swap within a machine (small local change)
+            machine = random.choice(M)
+            if len(new_solution[machine]) > 1:
+                order1_idx, order2_idx = random.sample(range(len(new_solution[machine])), 2)
+                new_solution[machine][order1_idx], new_solution[machine][order2_idx] = (
+                    new_solution[machine][order2_idx],
+                    new_solution[machine][order1_idx]
+                )
+        else:  # Swap orders between two machines
+            machine1, machine2 = random.sample(M, 2)
+            if new_solution[machine1] and new_solution[machine2]:
+                order1_idx = random.randint(0, len(new_solution[machine1]) - 1)
+                order2_idx = random.randint(0, len(new_solution[machine2]) - 1)
+                new_solution[machine1][order1_idx], new_solution[machine2][order2_idx] = (
+                    new_solution[machine2][order2_idx],
+                    new_solution[machine1][order1_idx]
+                )
 
             # Re-initialize current_time and current_colour after the swap
             temp_time = {machine: 0 for machine in M}
@@ -321,31 +335,51 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate):
             # Update schedule with the new swapped solution
             update_schedule(new_solution, temp_time, temp_colour)
             new_penalty = calculate_penalty_for_schedule(new_solution)
+            
+            # Accept or reject new solution based on penalty and temperature
+            penalty_diff = new_penalty - current_penalty
 
-            if new_penalty < current_penalty:
+            if penalty_diff < 0:
+                # Accept the better solution
                 current_solution = new_solution
                 current_penalty = new_penalty
+                no_improvement_count = 0  # Reset improvement counter
                 if new_penalty < best_penalty:
                     best_solution = copy.deepcopy(new_solution)
                     best_penalty = new_penalty
             else:
-                # Calculate acceptance probability based on temperature
-                penalty_diff = (current_penalty - new_penalty)
-                acceptance_probability = np.exp(penalty_diff / max(1, temperature))
-
+                # Accept worse solution with a probability dependent on the temperature
+                acceptance_probability = np.exp(-penalty_diff / max(temperature, 1e-8))
                 if random.random() < acceptance_probability:
                     current_solution = new_solution
                     current_penalty = new_penalty
+                else:
+                    no_improvement_count += 1
 
-        # Update temperature using cooling schedule
-        temperature = initial_temp / (1 + cooling_rate * iteration)
-        penalty_history.append(current_penalty)
+            # Cooling: Update temperature using the exponential schedule
+            temperature *= cooling_rate
 
-        if iteration % 100 == 0:
-            logger.debug(msg=f"Iteration {iteration}, Best Penalty: {best_penalty}")
+            # Track penalties and temperature
+            penalty_history.append(current_penalty)
+            best_penalty_history.append(best_penalty)
+            temperature_history.append(temperature)
 
-        if temperature < 1e-8:
-            break
+            # Detonation: if no improvement after a set number of iterations
+            if no_improvement_count >= detonation_threshold:
+                logger.info(msg=f"Detonation at iteration {iteration}")
+                # Reset current solution to a completely random new solution (force exploration)
+                current_solution = copy.deepcopy(scheduled_orders)
+                current_penalty = calculate_penalty_for_schedule(current_solution)
+                no_improvement_count = 0  # Reset counter
+                temperature *= 1.5  # Slightly raise the temperature to escape local optima
+
+            # Early stop if temperature is too low
+            if temperature < 1e-8:
+                break
+
+            if iteration % 100 == 0:
+                logger.info(msg=f"Iteration {iteration}, Current Penalty: {current_penalty}, Best Penalty: {best_penalty}, Temperature: {temperature}")
+
 
     # Plot the penalty history
     plt.plot(penalty_history, marker='o', color='b')
@@ -355,10 +389,6 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate):
     plt.grid(True)
     plt.show()
     
-    # Log elapsed time for simulated annealing
-    #end_time_sa = time.time()
-    #logger.info(msg=f'Elapsed time Meta Heuristics (sa): {end_time_sa - start_time_sa:.6f}')
-
     return best_penalty, best_solution
 
 # Function for plotting a Gantt chart of the resulting schedules
@@ -373,14 +403,6 @@ def plot_schedule(scheduled_orders, method, orders_df):
     fig, ax = plt.subplots(figsize=(10, 6))
     
     y_pos = 0
-    
-    # Colours for visualisation
-    color_map = {
-        'Green': 'green',
-        'Yellow': 'yellow',
-        'Blue': 'blue',
-        'Red': 'red'
-    }
 
     for machine, orders in scheduled_orders.items():
         y_pos += 1  # For each machine
@@ -397,7 +419,7 @@ def plot_schedule(scheduled_orders, method, orders_df):
             is_late = end_time > deadline
 
             # Draw processing time
-            bar_color = color_map[order_color] 
+            bar_color = order_color
             ax.barh(y_pos, processing_time, left=start_time + setup_time, color=bar_color, edgecolor='black')
             
             # Add order number, mark it with '*' if late
@@ -445,6 +467,7 @@ def main():
     end_time_sa = time.time()
     logger.info(msg=f'Elapsed time Meta Heuristics (sa): {end_time_sa - start_time_sa:.6f}')
     plot_schedule(sa_schedule, 'Simulated Annealing', orders_df)
+    logger.info(msg='------------------- END OF OPTIMIZATION -------------------')
 
 if __name__ == "__main__":
     main()

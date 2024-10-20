@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO,
 
 # Parameters for simulated annealing
 
-initial_temperature = 100
+initial_temp = 100
 cooling_rate = 0.9995
 iterations_per_temperature = 1000
 
@@ -204,5 +204,5 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate, detonation_t
 
 # Call the simulated annealing function
 max_iterations = 10000
-total_penalty, optimised_scheduled_orders = simulated_annealing(max_iterations, initial_temperature, cooling_rate)
+total_penalty, optimised_scheduled_orders = simulated_annealing(max_iterations, initial_temp, cooling_rate)
 plot_schedule(optimised_scheduled_orders, 'Simulated Annealing', orders_df)
