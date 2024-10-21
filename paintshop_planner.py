@@ -481,9 +481,9 @@ def main():
     plot_schedule(greedy_schedule, 'Constructive Heuristics', orders_df)
     
     # Call two_exchange to optimize the schedule and plot it
-    two_exchange_penalty, two_exchange_schedule = two_exchange(greedy_penalty, greedy_schedule)
-    logger.info(f"2-Exchange total penalty: {two_exchange_penalty:2f}")
-    plot_schedule(two_exchange_schedule, '2-Exchange', orders_df)
+    # two_exchange_penalty, two_exchange_schedule = two_exchange(greedy_penalty, greedy_schedule)
+    # logger.info(f"2-Exchange total penalty: {two_exchange_penalty:2f}")
+    # plot_schedule(two_exchange_schedule, '2-Exchange', orders_df)
     
     # Call simulated_annealing to further optimize and plot it
     max_iterations = 5000  # Set the number of iterations for Simulated Annealing
@@ -494,9 +494,9 @@ def main():
     logger.info(f"Simulated Annealing total penalty: {sa_penalty:.2f}")
     plot_schedule(sa_schedule, 'Simulated Annealing', orders_df)
     
-    # Export schedule to excel
-    logger.info('Exporting to Excel...')
-    export_schedule_to_excel(scheduled_orders, file_path, orders_df)
+    # # Export schedule to excel
+    # logger.info('Exporting to Excel...')
+    # export_schedule_to_excel(scheduled_orders, file_path, orders_df)
     logger.info('------------------- END OF OPTIMIZATION -------------------')
 
 if __name__ == "__main__":
