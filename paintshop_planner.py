@@ -331,11 +331,24 @@ def simulated_annealing(max_iterations, initial_temperature, cooling_rate):
         if iteration % 100 == 0:
             logger.info(msg=f"Iteration {iteration}, Current Penalty: {current_penalty}, Best Penalty: {best_penalty}, Temperature: {temperature}")
 
-    # Plot the penalty history to visualize the optimization progress
-    plt.plot(penalty_history, marker='o', color='b')
-    plt.title('Total Penalty per Iteration using Simulated Annealing')
-    plt.xlabel('Iteration')
-    plt.ylabel('Total Penalty')
+    # Plot the penalty and temperature history
+    fig, ax1 = plt.subplots()
+
+    ax1.set_xlabel('Iteration')
+    ax1.set_ylabel('Total Penalty', color='b')
+    ax1.plot(penalty_history, label='Current Penalty', color='b', marker='o')
+    ax1.plot(best_penalty_history, label='Best Penalty', color='g', linestyle='--')
+    ax1.tick_params(axis='y', labelcolor='b')
+    ax1.legend(loc='upper left')
+
+    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+    ax2.set_ylabel('Temperature', color='r')  # we already handled the x-label with ax1
+    ax2.plot(temperature_history, label='Temperature', color='r', linestyle='-.')
+    ax2.tick_params(axis='y', labelcolor='r')
+    ax2.legend(loc='upper right')
+
+    plt.title('Simulated Annealing: Penalty and Temperature over Iterations')
+    fig.tight_layout()  # to ensure the plot fits within the figure
     plt.grid(True)
     plt.show()
     
@@ -453,9 +466,10 @@ def main():
     logger.info(msg="Improving schedule using Simulated Annealing...")
     start_time_sa = time.time()
     max_iterations = 5000  # Set the number of iterations for Simulated Annealing
-    initial_temp = 100     # Set the initial temperature
-    cooling_rate = 0.98     # Set the cooling rate
-    sa_penalty, sa_schedule = simulated_annealing(max_iterations, initial_temp, cooling_rate)
+    initial_temperature = 200     # Set the initial temperature
+    cooling_rate = 0.9995     # Set the cooling rate
+    logger.info(f'max iterations: {max_iterations}, initial temperature: {initial_temperature}, cooling rate: {cooling_rate}')
+    sa_penalty, sa_schedule = simulated_annealing(max_iterations, initial_temperature, cooling_rate)
     logger.info(msg=f"Simulated Annealing total penalty: {sa_penalty:.2f}")
     end_time_sa = time.time()
     logger.info(msg=f'Elapsed time Meta Heuristics (sa): {end_time_sa - start_time_sa:.6f}')
