@@ -19,8 +19,8 @@ logging.basicConfig(level=logging.INFO,
 random.seed(70)
 
 # File paths of the databases (comment/uncomment as needed)
-file_path = 'paintshop_september_2024.xlsx'
-# file_path = 'paintshop_november_2024.xlsx'
+# file_path = 'paintshop_september_2024.xlsx'
+file_path = 'paintshop_november_2024.xlsx'
 
 # Import excel data
 logger.info("Importing data from Excel files...")
@@ -474,6 +474,7 @@ def export_schedule_to_excel(scheduled_orders, file_path, orders_df):
     schedule_df.to_excel(f'Schedule {file_path}', index=False)
 
 def main():
+    logger.info(f'Dataset: {file_path}')
     # Call greedy_paint_planner to get the initial schedule and plot it
     greedy_penalty, greedy_schedule = greedy_paint_planner()
     logger.info(f"Greedy total penalty: {greedy_penalty:.2f}")
