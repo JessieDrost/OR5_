@@ -20,7 +20,7 @@ random.seed(70)
 
 # File paths of the databases (comment/uncomment as needed)
 file_path = 'paintshop_september_2024.xlsx'
-#file_path = 'paintshop_november_2024.xlsx'
+# file_path = 'paintshop_november_2024.xlsx'
 
 # Import excel data
 logger.info("Importing data from Excel files...")
@@ -29,60 +29,49 @@ machines_df = pd.read_excel(file_path, sheet_name='Machines')
 setups_df = pd.read_excel(file_path, sheet_name='Setups')
 
 # Define sets
-B = orders_df['order'].tolist()  # Bestellingen
+B = orders_df['order'].tolist()  # Orders
 M = machines_df['machine'].tolist()  # Machines
-H1 = setups_df['from_colour'].tolist()  # Startkleuren
-H2 = setups_df['to_colour'].tolist()  # Eindkleuren
 
 # Define starting values
-current_time = {machine: 0 for machine in M}  # Tijd per machine
-current_color = {machine: None for machine in M}  # Kleur per machine
+current_time = {machine: 0 for machine in M}  # Time per machine
+current_color = {machine: None for machine in M}  # Colour per machine
 scheduled_orders = {machine: [] for machine in M}  # Orders per machine
-available_orders = B.copy()  # Beschikbare orders
+available_orders = B.copy()  # Available orders
 
 # Functions for calculating data for mathematical model
 def processing_time(surface, speed):
-    """ Calculate the processing time based on surface area and machine speed.
-    """
+    """ Calculate the processing time based on surface area and machine speed. """
     return surface / speed
 
 def setup_time(from_colour, to_colour, setups_df):
-    """ Calculate setup time based on the color transition.
-    """
+    """ Calculate setup time based on the color transition. """
     if from_colour == to_colour or from_colour is None:
         return 0
-    else:
-        return setups_df[(setups_df['from_colour'] == from_colour) & (setups_df['to_colour'] == to_colour)]['setup_time'].values[0]
+    return setups_df[(setups_df['from_colour'] == from_colour) & (setups_df['to_colour'] == to_colour)]['setup_time'].values[0]
 
 def calculate_total_penalty(current_time, deadline, penalty):
-    """ Calculate total penalty based on the delay from the deadline.
-    """
+    """ Calculate total penalty based on the delay from the deadline. """
     delay = max(0, current_time - deadline)
     return delay * penalty
 
 def calculate_penalty_for_schedule(scheduled_orders):
-    """ Calculate the total penalty for the entire schedule.
-    """
+    """ Calculate the total penalty for the entire schedule. """
     total_penalty = 0
     for machine, orders in scheduled_orders.items():
         for order in orders:
             completion_time = order['end_time']
             order_info = orders_df[orders_df['order'] == order['order']].iloc[0]
-            penalty = order_info['penalty']
-            deadline = order_info['deadline']
-            total_penalty += calculate_total_penalty(completion_time, deadline, penalty)
+            total_penalty += calculate_total_penalty(completion_time, order_info['deadline'], order_info['penalty'])
     return total_penalty
 
 def update_schedule(scheduled_orders, current_time, current_colour):
-    """ Update the machine schedules and recalculate times and setups.
-    """
+    """ Update the machine schedules and recalculate times and setups. """
     for machine, orders in scheduled_orders.items():
         current_time[machine] = 0
         current_colour[machine] = None
         for order in orders:
             order_info = orders_df[orders_df['order'] == order['order']].iloc[0]
-            process_time = processing_time(order_info['surface'], 
-                                           machines_df[machines_df['machine'] == machine]['speed'].values[0])
+            process_time = processing_time(order_info['surface'], machines_df[machines_df['machine'] == machine]['speed'].values[0])
             set_time = setup_time(current_colour[machine], order_info['colour'], setups_df)
 
             start_time = current_time[machine]
@@ -93,7 +82,7 @@ def update_schedule(scheduled_orders, current_time, current_colour):
             order['setup_time'] = set_time
             current_time[machine] = end_time
             current_colour[machine] = order_info['colour']
-         
+
 # Function for constructive heuristics: Greedy Paint Planner
 def greedy_paint_planner():
     """ Greedy algorithm to assign orders to machines.
@@ -102,56 +91,42 @@ def greedy_paint_planner():
     Returns:
         total_penalty (int): The total penalty incurred after scheduling.
         scheduled_orders (dict): A dictionary containing the schedule for each machine.
-    """    
+    """   
     total_penalty = 0  # Initialize total penalty
-    
-    # Sort machines by speed (fastest machines first)
-    sorted_machines = machines_df.sort_values(by='speed', ascending=False)['machine'].tolist()
-      
+    sorted_machines = machines_df.sort_values(by='speed', ascending=False)['machine'].tolist()  # Sort machines by speed (fastest machines first)
+
     # Continue until all orders are assigned
     while available_orders:
-        # Iterate over each machine (starting with the fastest)
-        for machine in sorted_machines:
+        for machine in sorted_machines:  # Iterate over each machine (starting with the fastest)
             if not available_orders:
                 break  # Stop if all orders have been assigned
 
-            best_order = None  # Initialize the best order to None
-            min_setup_time = VERYBIGNUMBER  # Large initial value for setup time comparison
-            max_penalty = -VERYBIGNUMBER  # Negative large value for penalty comparison
-            
+            best_order = None
+            min_setup_time = VERYBIGNUMBER
+            max_penalty = - VERYBIGNUMBER
+
             # Find the best order to assign to the current machine
             for order in available_orders:
-                # Retrieve order details (surface area, color, deadline, and penalty)
                 order_info = orders_df[orders_df['order'] == order].iloc[0]
-                surface = order_info['surface']
-                colour = order_info['colour']
-                deadline = order_info['deadline']
-                penalty = order_info['penalty']
-                
-                # Calculate processing time and setup time
-                process_time = processing_time(surface, machines_df[machines_df['machine'] == machine]['speed'].values[0])
-                set_time = setup_time(current_color[machine], colour, setups_df)
+                process_time = processing_time(order_info['surface'], machines_df[machines_df['machine'] == machine]['speed'].values[0])
+                set_time = setup_time(current_color[machine], order_info['colour'], setups_df)
                 completion_time = current_time[machine] + process_time + set_time
-                
-                # Calculate the penalty for late orders
-                current_penalty = calculate_total_penalty(completion_time, deadline, penalty)
-                
-                # Choose the order with the lowest setup time, and in case of a tie, select the higher penalty order
+                current_penalty = calculate_total_penalty(completion_time, order_info['deadline'], order_info['penalty'])
+
                 if set_time < min_setup_time or (set_time == min_setup_time and current_penalty > max_penalty):
-                    best_order = order  # Assign this order as the best option
-                    min_setup_time = set_time  # Update minimum setup time
-                    max_penalty = current_penalty  # Update penalty
-                
-            # If a suitable order is found, assign it to the machine
+                    best_order = order
+                    min_setup_time = set_time
+                    max_penalty = current_penalty
+
+            # Choose the order with the lowest setup time, and in case of a tie, select the higher penalty order
             if best_order is not None:
-                # Retrieve details of the best order
                 order_info = orders_df[orders_df['order'] == best_order].iloc[0]
                 process_time = processing_time(order_info['surface'], machines_df[machines_df['machine'] == machine]['speed'].values[0])
                 set_time = setup_time(current_color[machine], order_info['colour'], setups_df)
-                
+
                 # Schedule the order on the current machine
                 start_time = current_time[machine]
-                end_time = current_time[machine] + process_time + set_time
+                end_time = start_time + process_time + set_time
                 scheduled_orders[machine].append({
                     'order': best_order,
                     'start_time': start_time,
@@ -159,23 +134,20 @@ def greedy_paint_planner():
                     'setup_time': set_time,
                     'colour': order_info['colour'],
                 })
-                
-                # Update machine status with new end time and color
                 current_time[machine] = end_time
                 current_color[machine] = order_info['colour']
                 
                 # Remove the order from available orders and add its penalty to the total
                 available_orders.remove(best_order)
-                total_penalty += max_penalty  # Accumulate penalty
-                          
+                total_penalty += max_penalty
+
     return total_penalty, scheduled_orders
 
 # Function for discrete improving search: 2-exchange algorithm
 def two_exchange():
-    """
-    Discrete improving search algorithm for optimizing the schedule.
-    Starts with the solution obtained through greedy_paint_planner().
-    Evaluates possible 2-exchange moves by swapping two operations to check for improvements.
+    """ Discrete improving search algorithm for optimizing the schedule.
+        Starts with the solution obtained through greedy_paint_planner().
+        Evaluates possible 2-exchange moves by swapping two operations to check for improvements.
 
     Returns:
         total_penalty (int): The total penalty after optimization.
@@ -184,48 +156,14 @@ def two_exchange():
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
 
-    # Initialize current status of machines (time and color for each machine)
-    current_time = {machine: 0 for machine in M}
-    current_colour = {machine: None for machine in M}
-    
-    # Helper function to update the schedule after an exchange
-    def update_schedule(scheduled_orders, current_time, current_colour):
-        for machine, orders in scheduled_orders.items():
-            # Reset machine's current time and color
-            current_time[machine] = 0
-            current_colour[machine] = None
-            
-            # Recalculate timings for each order on this machine
-            for order in orders:
-                order_info = orders_df[orders_df['order'] == order['order']].iloc[0]
-                process_time = processing_time(order_info['surface'], machines_df[machines_df['machine'] == machine]['speed'].values[0])
-                set_time = setup_time(current_colour[machine], order_info['colour'], setups_df)
-
-                # Calculate start and end time based on updated machine status
-                start_time = current_time[machine]
-                end_time = start_time + process_time + set_time
-
-                # Update the order's scheduled times
-                order['start_time'] = start_time
-                order['end_time'] = end_time
-                order['setup_time'] = set_time
-                
-                # Update machine's current state after scheduling this order
-                current_time[machine] = end_time
-                current_colour[machine] = order_info['colour']
-
-    # Initially update the schedule with the current time and color
-    update_schedule(scheduled_orders, current_time, current_colour)
-
-    improved = True  # Flag to keep track of improvements
-    penalty_history = []  # List to store penalties at each iteration
+    penalty_history = []
+    improved = True
+    update_schedule(scheduled_orders, current_time, current_color)
 
     while improved:
         improved = False
-        # Calculate penalty for the current schedule
+        # Calculate penalty for the current schedule and add current penalty to history
         best_penalty = calculate_penalty_for_schedule(scheduled_orders)
-        
-        # Append the current penalty to penalty history
         penalty_history.append(best_penalty)
 
         # Try swapping each pair of orders on different machines
@@ -235,33 +173,27 @@ def two_exchange():
                     if machine1 == machine2:
                         continue  # Skip if both orders are on the same machine
                     for order2 in scheduled_orders[machine2]:
-                        # Make a temporary copy of the current schedule
                         temporary_scheduled_orders = copy.deepcopy(scheduled_orders)
 
                         # Find indices of the orders to be swapped
                         idx1 = next(i for i, o in enumerate(temporary_scheduled_orders[machine1]) if o['order'] == order1['order'])
                         idx2 = next(i for i, o in enumerate(temporary_scheduled_orders[machine2]) if o['order'] == order2['order'])
-                        
-                        # Swap the orders between machines
+
                         temporary_scheduled_orders[machine1][idx1], temporary_scheduled_orders[machine2][idx2] = (
                             temporary_scheduled_orders[machine2][idx2],
                             temporary_scheduled_orders[machine1][idx1]
                         )
 
-                        # Update the schedule after swapping
-                        temporary_time = copy.deepcopy(current_time)
-                        temporary_colour = copy.deepcopy(current_colour)
-                        update_schedule(temporary_scheduled_orders, temporary_time, temporary_colour)
-
-                        # Calculate the total penalty for the new schedule
+                        # Update the schedule after swapping and calculate the total penalty for the new schedule
+                        update_schedule(temporary_scheduled_orders, current_time, current_color)
                         temporary_penalty = calculate_penalty_for_schedule(temporary_scheduled_orders)
 
                         # If the penalty improves, accept the exchange
                         if temporary_penalty < best_penalty:
-                            scheduled_orders = temporary_scheduled_orders  # Update the schedule
-                            best_penalty = temporary_penalty  # Update the best penalty
-                            improved = True  # Set improvement flag
-                            break  # Exit the inner loop if improvement is found
+                            scheduled_orders = temporary_scheduled_orders
+                            best_penalty = temporary_penalty
+                            improved = True
+                            break
                     if improved:
                         break
             if improved:
@@ -269,14 +201,12 @@ def two_exchange():
 
         # Stop if no further improvements are found
         if not improved:
-            logger.info(msg="No further improvements possible.")
+            logger.info("No further improvements possible.")
             break
-      
-    # After optimization, calculate the total penalty for the optimized schedule
+        
+    # Calculate the total penalty for the optimized schedule
     total_penalty = calculate_penalty_for_schedule(scheduled_orders)
-    logger.debug(msg=f"Total penalty: {total_penalty}")
-
-    # Append the final penalty to the history list (optional, depending on whether it's already appended)
+    logger.info(f"Total penalty: {total_penalty}")
     penalty_history.append(total_penalty)
 
     # Plot the total penalty over iterations
@@ -287,7 +217,7 @@ def two_exchange():
     plt.ylabel('Total Penalty')
     plt.grid(True)
     plt.show()
-  
+
     return total_penalty, scheduled_orders
 
 # Function for meta-heuristics: Simulated Annealing
@@ -500,7 +430,6 @@ def export_schedule_to_excel(scheduled_orders, file_path, orders_df):
     # Export the DataFrame to an Excel file
     schedule_df.to_excel(f'Schedule {file_path}', index=False)
 
-    
 def main():
     # Call greedy_paint_planner to get the initial schedule and plot it
     logger.info(msg="Generating schedule using Greedy Paint Planner...")
@@ -538,4 +467,4 @@ def main():
     logger.info(msg='------------------- END OF OPTIMIZATION -------------------')
 
 if __name__ == "__main__":
-    main()
+    main()   
