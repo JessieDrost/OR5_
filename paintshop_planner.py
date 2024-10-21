@@ -7,18 +7,19 @@ import logging
 import time
 import matplotlib.pyplot as plt
 
+VERYBIGNUMBER = 424242424242
+
 # Set logging                   
 logger = logging.getLogger(name='paintshop')
 logging.basicConfig(level=logging.INFO,
                     format='[%(asctime)s] %(message)s',
                     handlers=[logging.FileHandler("paintshop.log")])
 
-# Set needed values
-VERYBIGNUMBER = 424242424242
+# We want to be able to generate random instances
 random.seed(70)
-#start_time = time.time()
 
-#file_path = 'paintshop_september_2024.xlsx'
+# File paths of the databases (comment/uncomment as needed)
+# file_path = 'paintshop_september_2024.xlsx'
 file_path = 'paintshop_november_2024.xlsx'
 
 # Import excel data
@@ -33,7 +34,7 @@ M = machines_df['machine'].tolist()  # Machines
 H1 = setups_df['from_colour'].tolist()  # Startkleuren
 H2 = setups_df['to_colour'].tolist()  # Eindkleuren
 
-# Starting values
+# Define starting values
 current_time = {machine: 0 for machine in M}  # Tijd per machine
 current_color = {machine: None for machine in M}  # Kleur per machine
 scheduled_orders = {machine: [] for machine in M}  # Orders per machine
@@ -41,14 +42,12 @@ available_orders = B.copy()  # Beschikbare orders
 
 # Functions for calculating data for mathematical model
 def processing_time(surface, speed):
-    """
-    Calculate the processing time based on surface area and machine speed.
+    """ Calculate the processing time based on surface area and machine speed.
     """
     return surface / speed
 
 def setup_time(from_colour, to_colour, setups_df):
-    """
-    Calculate setup time based on the color transition.
+    """ Calculate setup time based on the color transition.
     """
     if from_colour == to_colour or from_colour is None:
         return 0
@@ -56,14 +55,14 @@ def setup_time(from_colour, to_colour, setups_df):
         return setups_df[(setups_df['from_colour'] == from_colour) & (setups_df['to_colour'] == to_colour)]['setup_time'].values[0]
 
 def calculate_total_penalty(current_time, deadline, penalty):
-    """
-    Calculate total penalty based on the delay from the deadline.
+    """ Calculate total penalty based on the delay from the deadline.
     """
     delay = max(0, current_time - deadline)
     return delay * penalty
 
 def calculate_penalty_for_schedule(scheduled_orders):
-    """Calculate the total penalty for the entire schedule."""
+    """ Calculate the total penalty for the entire schedule.
+    """
     total_penalty = 0
     for machine, orders in scheduled_orders.items():
         for order in orders:
@@ -75,7 +74,8 @@ def calculate_penalty_for_schedule(scheduled_orders):
     return total_penalty
 
 def update_schedule(scheduled_orders, current_time, current_colour):
-    """Update the machine schedules and recalculate times and setups."""
+    """ Update the machine schedules and recalculate times and setups.
+    """
     for machine, orders in scheduled_orders.items():
         current_time[machine] = 0
         current_colour[machine] = None
@@ -96,15 +96,14 @@ def update_schedule(scheduled_orders, current_time, current_colour):
 
 # Function for constructive heuristics            
 def greedy_paint_planner():
-    """
-    Greedy algorithm to assign orders to machines based on speed, setup time, and penalty.
+    """ Greedy algorithm to assign orders to machines.
+        Selects the order with the lowest setup time and assigns 
+        it to the fastest available machine
 
     Returns:
-        tuple: Total penalty and a dictionary of scheduled orders for each machine.
-    """
+        _type_: _description_
+    """    
     total_penalty = 0
-    # Start timing
-    #start_time_gpp = time.time()
     
     # Sort machines by speed (fastest first)
     sorted_machines = machines_df.sort_values(by='speed', ascending=False)['machine'].tolist()
@@ -164,23 +163,18 @@ def greedy_paint_planner():
                 available_orders.remove(best_order)
                 total_penalty += max_penalty  # Add penalty
                           
-    # Log elapsed time for greedy algorithm
-    #end_time_gpp = time.time()
-    #logger.info(msg=f'Elapsed time Constructive Heuristics (gpp): {end_time_gpp - start_time_gpp:.6f}')
     return total_penalty, scheduled_orders
 
 # Function for discrete improving search
 def two_exchange():
-    """
-    Discrete improving search algorithm for optimising the schedule.
 
+    """ Discrete improving search algorithm for optimising the schedule.
+        Starts with the solution obtained through greedy_paint_planner().
+        Evaluate next 2-exchange move by swapping two operations to see if an improvement can be made.
+        
     Returns:
-        int: Total penalty after optimisation.
-        dict: Optimised schedule with orders per machine.
-    """
-    # Start timing
-    #start_time_te = time.time()
-    
+        _type_: _description_
+    """    
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
 
@@ -228,29 +222,29 @@ def two_exchange():
                         continue
                     for order2 in scheduled_orders[machine2]:
                         # Make a temporary copy of the schedule
-                        temp_scheduled_orders = copy.deepcopy(scheduled_orders)
+                        temporary_scheduled_orders = copy.deepcopy(scheduled_orders)
 
                         # Exchange the orders directly here
-                        idx1 = next(i for i, o in enumerate(temp_scheduled_orders[machine1]) if o['order'] == order1['order'])
-                        idx2 = next(i for i, o in enumerate(temp_scheduled_orders[machine2]) if o['order'] == order2['order'])
+                        idx1 = next(i for i, o in enumerate(temporary_scheduled_orders[machine1]) if o['order'] == order1['order'])
+                        idx2 = next(i for i, o in enumerate(temporary_scheduled_orders[machine2]) if o['order'] == order2['order'])
                         
-                        temp_scheduled_orders[machine1][idx1], temp_scheduled_orders[machine2][idx2] = (
-                            temp_scheduled_orders[machine2][idx2],
-                            temp_scheduled_orders[machine1][idx1]
+                        temporary_scheduled_orders[machine1][idx1], temporary_scheduled_orders[machine2][idx2] = (
+                            temporary_scheduled_orders[machine2][idx2],
+                            temporary_scheduled_orders[machine1][idx1]
                         )
 
                         # Update the schedule after the exchange
-                        temp_time = copy.deepcopy(current_time)
-                        temp_colour = copy.deepcopy(current_colour)
-                        update_schedule(temp_scheduled_orders, temp_time, temp_colour)
+                        temporary_time = copy.deepcopy(current_time)
+                        temporary_colour = copy.deepcopy(current_colour)
+                        update_schedule(temporary_scheduled_orders, temporary_time, temporary_colour)
 
                         # Calculate the total penalty for the new schedule
-                        temp_penalty = calculate_penalty_for_schedule(temp_scheduled_orders)
+                        temporary_penalty = calculate_penalty_for_schedule(temporary_scheduled_orders)
 
                         # If the penalty has improved, accept the exchange
-                        if temp_penalty < best_penalty:
-                            scheduled_orders = temp_scheduled_orders
-                            best_penalty = temp_penalty
+                        if temporary_penalty < best_penalty:
+                            scheduled_orders = temporary_scheduled_orders
+                            best_penalty = temporary_penalty
                             improved = True
                             break  # Return to the start if an improvement is found
                     if improved:
@@ -278,16 +272,21 @@ def two_exchange():
     plt.ylabel('Total Penalty')
     plt.grid(True)
     plt.show()
-
-    # Log elapsed time for 2 exchange
-    #end_time_te = time.time()
-    #logger.info(msg=f'Elapsed time Discrete Improving Search (te): {end_time_te - start_time_te:.6f}')
-    
+  
     return total_penalty, scheduled_orders
 
 #Function for meta-heuristics
+def simulated_annealing(max_iterations, initial_temperature, cooling_rate):
+    """_summary_
 
-def simulated_annealing(max_iterations, initial_temp, cooling_rate):
+    Args:
+        max_iterations (_type_): _description_
+        initial_temperature (_type_): _description_
+        cooling_rate (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     
     # Start with the feasible solution from the greedy planner
     total_penalty, scheduled_orders = greedy_paint_planner()
@@ -295,7 +294,7 @@ def simulated_annealing(max_iterations, initial_temp, cooling_rate):
     current_solution = copy.deepcopy(scheduled_orders)
     current_penalty = calculate_penalty_for_schedule(current_solution)
 
-    temperature = initial_temp
+    temperature = initial_temperature
     best_solution = copy.deepcopy(current_solution)
     best_penalty = current_penalty
 
