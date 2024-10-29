@@ -65,3 +65,78 @@
 [2024-10-21 16:54:58,976] Simulated Annealing total penalty: 1114.38
 [2024-10-21 16:55:00,234] Exporting to Excel...
 [2024-10-21 16:55:00,312] ------------------- END OF OPTIMIZATION -------------------
+[2024-10-29 10:04:45,238] Importing data from Excel files...
+[2024-10-29 10:05:23,411] Importing data from Excel files...
+[2024-10-29 10:18:47,261] Importing data from Excel files...
+[2024-10-29 10:20:10,018] Importing data from Excel files...
+[2024-10-29 10:21:49,994] Importing data from Excel files...
+[2024-10-29 10:21:50,160] Dataset: paintshop_november_2024.xlsx
+[2024-10-29 10:21:50,160] Generating schedule using Greedy Paint Planner...
+[2024-10-29 10:21:50,586] Elapsed time Constructive Heuristics (gpp): 0.426306
+[2024-10-29 10:21:50,586] Greedy total penalty: 5289.68
+[2024-10-29 10:21:53,902] Improving schedule using 2-Exchange...
+[2024-10-29 10:22:13,764] Importing data from Excel files...
+[2024-10-29 10:22:13,957] ------------------- END OF OPTIMIZATION -------------------
+[2024-10-29 10:23:34,795] Importing data from Excel files...
+[2024-10-29 10:23:34,997] ------------------- END OF OPTIMIZATION -------------------
+[2024-10-29 10:25:32,050] Importing data from Excel files...
+[2024-10-29 10:25:32,255] Dataset: paintshop_november_2024.xlsx
+[2024-10-29 10:25:32,255] Generating schedule using Greedy Paint Planner...
+[2024-10-29 10:25:32,653] Elapsed time Constructive Heuristics (gpp): 0.397907
+[2024-10-29 10:25:32,653] Greedy total penalty: 5289.68
+[2024-10-29 10:25:34,828] max iterations: 5000, initial temperature: 100, cooling rate: 0.995
+[2024-10-29 10:25:34,828] Improving schedule using Simulated Annealing...
+[2024-10-29 10:25:34,883] Iteration 0, Current Penalty: 5201.676470588235, Best Penalty: 5201.676470588235, Temperature: 99.5
+[2024-10-29 10:25:37,028] Iteration 100, Current Penalty: 4042.7941176470586, Best Penalty: 3761.2941176470586, Temperature: 60.27415843082739
+[2024-10-29 10:25:39,141] Iteration 200, Current Penalty: 3264.1470588235297, Best Penalty: 3153.7058823529414, Temperature: 36.51230326175357
+[2024-10-29 10:25:41,246] Iteration 300, Current Penalty: 2880.7941176470595, Best Penalty: 2880.7941176470595, Temperature: 22.118073884154285
+[2024-10-29 10:25:43,204] Iteration 400, Current Penalty: 2792.970588235294, Best Penalty: 2783.7941176470595, Temperature: 13.398475271138315
+[2024-10-29 10:25:45,185] Iteration 500, Current Penalty: 2545.0588235294126, Best Penalty: 2545.058823529412, Temperature: 8.116400213307683
+[2024-10-29 10:25:47,107] Iteration 600, Current Penalty: 2325.588235294118, Best Penalty: 2325.588235294118, Temperature: 4.916675299948833
+[2024-10-29 10:25:49,187] Iteration 700, Current Penalty: 2252.3235294117653, Best Penalty: 2252.3235294117653, Temperature: 2.9783765425331863
+[2024-10-29 10:25:51,102] Iteration 800, Current Penalty: 1923.0294117647068, Best Penalty: 1923.0294117647068, Temperature: 1.8042124582040728
+[2024-10-29 10:25:52,921] Iteration 900, Current Penalty: 1878.0294117647068, Best Penalty: 1878.0294117647068, Temperature: 1.09293856832829
+[2024-10-29 10:25:55,026] Iteration 1000, Current Penalty: 1712.9705882352944, Best Penalty: 1712.9705882352944, Temperature: 0.6620698735937796
+[2024-10-29 10:25:57,155] Iteration 1100, Current Penalty: 1712.9705882352944, Best Penalty: 1712.9705882352944, Temperature: 0.40106235631426473
+[2024-10-29 10:25:58,957] Iteration 1200, Current Penalty: 1654.1470588235295, Best Penalty: 1654.1470588235295, Temperature: 0.24295171864449192
+[2024-10-29 10:26:00,779] Iteration 1300, Current Penalty: 1600.3235294117653, Best Penalty: 1600.3235294117653, Temperature: 0.14717296864944646
+[2024-10-29 10:26:02,616] Iteration 1400, Current Penalty: 1563.2647058823536, Best Penalty: 1563.2647058823536, Temperature: 0.08915303345841143
+[2024-10-29 10:26:04,439] Iteration 1500, Current Penalty: 1563.2647058823536, Best Penalty: 1563.2647058823536, Temperature: 0.05400627199257437
+[2024-10-29 10:26:06,276] Iteration 1600, Current Penalty: 1563.2647058823536, Best Penalty: 1563.2647058823536, Temperature: 0.03271540295817876
+[2024-10-29 10:26:08,115] Iteration 1700, Current Penalty: 1513.8529411764716, Best Penalty: 1513.8529411764716, Temperature: 0.01981802392994601
+[2024-10-29 10:26:09,952] Iteration 1800, Current Penalty: 1502.7941176470588, Best Penalty: 1502.7941176470588, Temperature: 0.012005173006427098
+[2024-10-29 10:26:11,773] Iteration 1900, Current Penalty: 1502.7941176470588, Best Penalty: 1502.7941176470588, Temperature: 0.007272378892250049
+[2024-10-29 10:26:13,651] Iteration 2000, Current Penalty: 1175.1470588235297, Best Penalty: 1175.1470588235297, Temperature: 0.004405392135884269
+[2024-10-29 10:26:15,776] Iteration 2100, Current Penalty: 1156.735294117648, Best Penalty: 1156.735294117648, Temperature: 0.002668656317067434
+[2024-10-29 10:26:17,624] Iteration 2200, Current Penalty: 1156.735294117648, Best Penalty: 1156.735294117648, Temperature: 0.0016165931020336775
+[2024-10-29 10:26:19,452] Iteration 2300, Current Penalty: 1114.3823529411775, Best Penalty: 1114.3823529411775, Temperature: 0.0009792843090468413
+[2024-10-29 10:26:21,288] Iteration 2400, Current Penalty: 1114.3823529411775, Best Penalty: 1114.3823529411775, Temperature: 0.000593221483339826
+[2024-10-29 10:26:23,125] Iteration 2500, Current Penalty: 1114.3823529411775, Best Penalty: 1114.3823529411775, Temperature: 0.0003593560368984435
+[2024-10-29 10:26:24,916] Iteration 2600, Current Penalty: 1114.382352941177, Best Penalty: 1114.382352941177, Temperature: 0.0002176872633275485
+[2024-10-29 10:26:26,744] Iteration 2700, Current Penalty: 1114.3823529411775, Best Penalty: 1114.382352941177, Temperature: 0.00013186850852440107
+[2024-10-29 10:26:28,592] Iteration 2800, Current Penalty: 1114.3823529411775, Best Penalty: 1114.382352941177, Temperature: 7.988204396820767e-05
+[2024-10-29 10:26:28,859] Detonation at iteration 2815
+[2024-10-29 10:26:30,459] Iteration 2900, Current Penalty: 4148.647058823531, Best Penalty: 1114.382352941177, Temperature: 7.258527096358895e-05
+[2024-10-29 10:26:32,396] Iteration 3000, Current Penalty: 3413.9705882352946, Best Penalty: 1114.382352941177, Temperature: 4.397001127441104e-05
+[2024-10-29 10:26:34,429] Iteration 3100, Current Penalty: 3010.6176470588243, Best Penalty: 1114.382352941177, Temperature: 2.6635732922202213e-05
+[2024-10-29 10:26:36,386] Iteration 3200, Current Penalty: 2883.764705882353, Best Penalty: 1114.382352941177, Temperature: 1.6135139558532886e-05
+[2024-10-29 10:26:38,348] Iteration 3300, Current Penalty: 2841.764705882353, Best Penalty: 1114.382352941177, Temperature: 9.77419053321128e-06
+[2024-10-29 10:26:40,310] Iteration 3400, Current Penalty: 2799.764705882353, Best Penalty: 1114.382352941177, Temperature: 5.920915665646938e-06
+[2024-10-29 10:26:42,233] Iteration 3500, Current Penalty: 2674.176470588235, Best Penalty: 1114.382352941177, Temperature: 3.5867156672037352e-06
+[2024-10-29 10:26:44,109] Iteration 3600, Current Penalty: 2611.176470588235, Best Penalty: 1114.382352941177, Temperature: 2.1727263152901382e-06
+[2024-10-29 10:26:45,994] Iteration 3700, Current Penalty: 2472.676470588235, Best Penalty: 1114.382352941177, Temperature: 1.316173368388198e-06
+[2024-10-29 10:26:47,884] Iteration 3800, Current Penalty: 2319.382352941176, Best Penalty: 1114.382352941177, Temperature: 7.972989158659911e-07
+[2024-10-29 10:26:49,999] Iteration 3900, Current Penalty: 2134.970588235294, Best Penalty: 1114.382352941177, Temperature: 4.829801122777257e-07
+[2024-10-29 10:26:51,908] Iteration 4000, Current Penalty: 2089.7941176470586, Best Penalty: 1114.382352941177, Temperature: 2.9257507343081897e-07
+[2024-10-29 10:26:54,032] Iteration 4100, Current Penalty: 2089.7941176470586, Best Penalty: 1114.382352941177, Temperature: 1.772333299384939e-07
+[2024-10-29 10:26:56,232] Iteration 4200, Current Penalty: 2089.7941176470586, Best Penalty: 1114.382352941177, Temperature: 1.073627116375466e-07
+[2024-10-29 10:26:56,697] Detonation at iteration 4222
+[2024-10-29 10:26:58,310] Iteration 4300, Current Penalty: 4441.5, Best Penalty: 1114.382352941177, Temperature: 9.755573503725718e-08
+[2024-10-29 10:27:00,456] Iteration 4400, Current Penalty: 4090.9705882352932, Best Penalty: 1114.382352941177, Temperature: 5.9096380195693076e-08
+[2024-10-29 10:27:02,522] Iteration 4500, Current Penalty: 3686.9999999999995, Best Penalty: 1114.382352941177, Temperature: 3.579884002616702e-08
+[2024-10-29 10:27:04,562] Iteration 4600, Current Penalty: 3160.2352941176464, Best Penalty: 1114.382352941177, Temperature: 2.1685878948512934e-08
+[2024-10-29 10:27:06,740] Iteration 4700, Current Penalty: 2844.264705882353, Best Penalty: 1114.382352941177, Temperature: 1.3136664356325778e-08
+[2024-10-29 10:27:10,301] Elapsed time Meta Heuristics (sa): 95.473146
+[2024-10-29 10:27:10,302] Simulated Annealing total penalty: 1114.38
+[2024-10-29 10:27:11,756] Exporting to Excel...
+[2024-10-29 10:27:11,829] ------------------- END OF OPTIMIZATION -------------------
